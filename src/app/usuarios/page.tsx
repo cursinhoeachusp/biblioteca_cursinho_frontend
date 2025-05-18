@@ -1,18 +1,38 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { DataTable } from '../components/data-table'
 import { columns } from '../components/columns'
-import { todosUsuarios } from '@/data/todosUsuarios'
-import { usuariosAtrasados } from '@/data/usuariosAtrasados'
 import { Input } from "@/components/ui/input"
-import { useState } from 'react'
 import { AdicionarUsuarioBotao } from '../components/add-user-button'
+import { Usuario } from '@/app/components/columns'
 
 export default function UsuariosPage() {
+  const [todosUsuarios, setTodosUsuarios] = useState<Usuario[]>([])
+  const [usuariosAtrasados, setUsuariosAtrasados] = useState<Usuario[]>([])
   const [search, setSearch] = useState("")
+
+  useEffect(() => {
+    async function fetchUsuarios() {
+      try {
+        const resTodos = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios')
+        const dataTodos = await resTodos.json()
+        setTodosUsuarios(dataTodos)
+
+        const resAtrasados = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/atrasados')
+        const dataAtrasados = await resAtrasados.json()
+        setUsuariosAtrasados(dataAtrasados)
+      } catch (error) {
+        console.error("Erro ao buscar usuários:", error)
+      }
+    }
+
+    fetchUsuarios()
+  }, [])
 
   const termo = search.toLowerCase()
 
+  // Filtra todos os usuários (se houver busca)
   const usuariosFiltrados = todosUsuarios.filter((usuario) => {
     const idStr = usuario.id.toString()
     const cpfStr = usuario.cpf.toString()
@@ -26,9 +46,10 @@ export default function UsuariosPage() {
   })
 
   return (
-    <main >
+    <main>
       <div className='p-16'>
-      <h1 className="text-6xl font-bold mb-8">Usuários</h1>
+        <h1 className="text-6xl font-bold mb-8">Usuários</h1>
+
         <div className='relative flex flex-row'>
           <Input
             placeholder="Buscar por nome, ID ou CPF"
