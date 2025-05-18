@@ -1,5 +1,12 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { AddressDialog } from "./address-dialog"
+import { MoreHorizontal } from "lucide-react"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 export type Usuario = {
   id: number
@@ -55,6 +62,37 @@ export const columns: ColumnDef<Usuario>[] = [
       return <AddressDialog address={address} nome={nome} />
     }
     
+  },
+  {
+    id: 'menu',
+    header: '',
+    cell: ({ row }) => {
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button className="flex h-8 w-8 items-center justify-center rounded-md hover:bg-muted">
+              <MoreHorizontal className="h-4 w-4" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => {
+                console.log('Editar', row.original)
+              }}
+            >
+              Editar registro
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => {
+                console.log('Excluir', row.original)
+              }}
+            >
+              Excluir registro
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
   },
 ]
 

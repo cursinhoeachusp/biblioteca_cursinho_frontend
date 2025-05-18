@@ -18,7 +18,7 @@ export function Sidebar() {
     <aside className="w-56 h-screen bg-[#0b2245] text-white flex flex-col py-6 pl-4 shadow-md">
       <div className="mt-3 mb-10">
         <ImageG
-          src="/logoBiblioteca.png"
+          src="/logo.png"
           alt="Biblioteca Popular Logo"
           width={350}
           height={73}

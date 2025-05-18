@@ -6,6 +6,7 @@ import { todosUsuarios } from '@/data/todosUsuarios'
 import { usuariosAtrasados } from '@/data/usuariosAtrasados'
 import { Input } from "@/components/ui/input"
 import { useState } from 'react'
+import { AdicionarUsuarioBotao } from '../components/add-user-button'
 
 export default function UsuariosPage() {
   const [search, setSearch] = useState("")
@@ -28,16 +29,19 @@ export default function UsuariosPage() {
     <main >
       <div className='p-16'>
       <h1 className="text-6xl font-bold mb-8">Usuários</h1>
-        <div>
+        <div className='relative flex flex-row'>
           <Input
             placeholder="Buscar por nome, ID ou CPF"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-md"
           />
+          <div className='absolute right-0'>
+            <AdicionarUsuarioBotao />
+          </div>
         </div>
 
-        <div className="p-4">
+        <div className="p-4 mt-12">
           {search.trim() === "" ? (
             <>
               <h2 className="text-2xl font-bold mb-4">Usuários com empréstimos atrasados</h2>
