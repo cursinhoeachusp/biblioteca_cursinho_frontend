@@ -1,3 +1,4 @@
+import { Sidebar } from './components/sidebar'
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
@@ -18,11 +19,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${poppins.className}`}
-      >
-        {children}
+    <html lang="pt-BR">
+      <body className={`${poppins.className} antialiased`}>
+        {/* Sidebar fixa */}
+        <div className="fixed top-0 left-0 h-screen w-64 z-50">
+          <Sidebar />
+        </div>
+
+        {/* Conteúdo com padding lateral para evitar sobreposição */}
+        <main className="pl-64 min-h-screen bg-gray-50 p-6">
+          {children}
+        </main>
       </body>
     </html>
   );
