@@ -9,8 +9,8 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "PET SITES BOILERPLATE",
-  description: "Templates para projetos criados no setor de Sites do PET-SI",
+  title: "Biblioteca Popular",
+  description: "Sistema de Biblioteca do Curcinho Popular",
 };
 
 export default function RootLayout({
