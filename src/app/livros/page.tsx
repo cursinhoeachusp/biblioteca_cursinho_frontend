@@ -15,17 +15,23 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+type Autor = {
+  id: number
+  nome: string
+}
+
 type Livro = {
   isbn: string
   titulo: string
   editora: string
   edicao: string
   categoria: string
-  total_exemplares: number
-  exemplares_disponiveis: number
+  total_exemplares: number | string
+  exemplares_disponiveis: number | string
+  autores: Autor[]
 }
 
-type CampoBusca = 'titulo' | 'categoria' | 'isbn'
+type CampoBusca = 'titulo' | 'categoria' | 'isbn' | 'autores'
 
 export default function LivrosPage() {
   const [livros, setLivros] = useState<Livro[]>([])
@@ -47,19 +53,34 @@ export default function LivrosPage() {
   }, [])
 
   const livrosFiltrados = livros.filter((livro) => {
+    const termo = search.toLowerCase()
+
+    if (campoBusca === 'autores') {
+      return livro.autores?.some(autor =>
+        autor.nome.toLowerCase().includes(termo)
+      )
+    }
+
     const valorCampo = (livro as any)[campoBusca]
-    if (!valorCampo || typeof valorCampo !== 'string') return false
-    return valorCampo.toLowerCase().includes(search.toLowerCase())
+    if (!valorCampo) return false
+    return valorCampo.toString().toLowerCase().includes(termo)
   })
 
   const columns: ColumnDef<Livro>[] = [
     { accessorKey: 'isbn', header: 'ISBN' },
     { accessorKey: 'titulo', header: 'Título' },
+    { accessorKey: 'total_exemplares', header: 'Total' },
+    { accessorKey: 'exemplares_disponiveis', header: 'Disponíveis' },
     { accessorKey: 'editora', header: 'Editora' },
     { accessorKey: 'edicao', header: 'Edição' },
     { accessorKey: 'categoria', header: 'Categoria' },
-    { accessorKey: 'total_exemplares', header: 'Total' },
-    { accessorKey: 'exemplares_disponiveis', header: 'Disponíveis' },
+    {
+      accessorKey: 'autores',
+      header: 'Autores',
+      cell: ({ row }) => row.original.autores.map(a => a.nome).join(', '),
+    },
+    
+    
     {
       id: 'menu',
       header: '',
@@ -73,37 +94,23 @@ export default function LivrosPage() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               disabled={Number(row.original.exemplares_disponiveis) === 0}
-              onClick={() => {
-                console.log('Emprestimo', row.original)
-              }}
+              onClick={() => console.log('Emprestimo', row.original)}
             >
               Realizar empréstimo
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                console.log('Reserva', row.original)
-              }}
-            >
+            <DropdownMenuItem onClick={() => console.log('Reserva', row.original)}>
               Realizar reserva
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                console.log('Editar', row.original)
-              }}
-            >
+            <DropdownMenuItem onClick={() => console.log('Editar', row.original)}>
               Editar livro
             </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => {
-                console.log('Excluir', row.original)
-              }}
-            >
+            <DropdownMenuItem onClick={() => console.log('Excluir', row.original)}>
               Excluir livro
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-      )
-    }
+      ),
+    },
   ]
 
   return (
@@ -125,6 +132,7 @@ export default function LivrosPage() {
             <SelectItem value="titulo">Título</SelectItem>
             <SelectItem value="categoria">Categoria</SelectItem>
             <SelectItem value="isbn">ISBN</SelectItem>
+            <SelectItem value="autores">Autor(es)</SelectItem>
           </SelectContent>
         </Select>
         <div className="ml-auto flex gap-2">
