@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { ColumnDef } from '@tanstack/react-table'
 import { DataTable } from '../components/data-table'
 import { Input } from '@/components/ui/input'
@@ -8,12 +9,23 @@ import { Botao } from '../components/botao'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { MoreHorizontal } from 'lucide-react'
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogTrigger
+} from '@/components/ui/dialog'
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { toast } from "sonner"
+
+// Tipos
 
 type Autor = {
   id: number
@@ -34,9 +46,12 @@ type Livro = {
 type CampoBusca = 'titulo' | 'categoria' | 'isbn' | 'autores'
 
 export default function LivrosPage() {
+  const router = useRouter()
   const [livros, setLivros] = useState<Livro[]>([])
   const [search, setSearch] = useState('')
   const [campoBusca, setCampoBusca] = useState<CampoBusca>('titulo')
+  const [isbnParaExcluir, setIsbnParaExcluir] = useState<string | null>(null)
+  const [loadingExcluir, setLoadingExcluir] = useState(false)
 
   useEffect(() => {
     async function fetchLivros() {
@@ -66,6 +81,23 @@ export default function LivrosPage() {
     return valorCampo.toString().toLowerCase().includes(termo)
   })
 
+  async function excluirLivro(isbn: string) {
+    try {
+      setLoadingExcluir(true)
+      const res = await fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/isbn/${isbn}`, {
+        method: 'DELETE'
+      })
+      if (!res.ok) throw new Error()
+      toast.success("Livro excluído com sucesso!")
+      setLivros(prev => prev.filter(l => l.isbn !== isbn))
+    } catch {
+      toast.error("Erro ao excluir livro")
+    } finally {
+      setLoadingExcluir(false)
+      setIsbnParaExcluir(null)
+    }
+  }
+
   const columns: ColumnDef<Livro>[] = [
     { accessorKey: 'isbn', header: 'ISBN' },
     { accessorKey: 'titulo', header: 'Título' },
@@ -79,8 +111,6 @@ export default function LivrosPage() {
       header: 'Autores',
       cell: ({ row }) => row.original.autores.map(a => a.nome).join(', '),
     },
-    
-    
     {
       id: 'menu',
       header: '',
@@ -101,10 +131,10 @@ export default function LivrosPage() {
             <DropdownMenuItem onClick={() => console.log('Reserva', row.original)}>
               Realizar reserva
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log('Editar', row.original)}>
+            <DropdownMenuItem onClick={() => router.push(`/livros/editar/${row.original.isbn}`)}>
               Editar livro
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => console.log('Excluir', row.original)}>
+            <DropdownMenuItem onClick={() => setIsbnParaExcluir(row.original.isbn)}>
               Excluir livro
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -136,11 +166,33 @@ export default function LivrosPage() {
           </SelectContent>
         </Select>
         <div className="ml-auto flex gap-2">
-          <Botao texto="Adicionar livro" />
+          <Botao
+            texto="Adicionar livro"
+            onClick={() => router.push("/livros/adicionar")}
+          />
         </div>
       </div>
 
       <DataTable columns={columns} data={livrosFiltrados} />
+
+      <Dialog open={!!isbnParaExcluir} onOpenChange={() => setIsbnParaExcluir(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Tem certeza que deseja excluir este livro?</DialogTitle>
+          </DialogHeader>
+          <p>Essa ação é irreversível.</p>
+          <DialogFooter>
+            <button onClick={() => setIsbnParaExcluir(null)} className="text-sm px-3 py-1">Cancelar</button>
+            <button
+              onClick={() => excluirLivro(isbnParaExcluir!)}
+              className="bg-red-600 text-white px-4 py-2 rounded"
+              disabled={loadingExcluir}
+            >
+              {loadingExcluir ? "Excluindo..." : "Excluir"}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </main>
   )
 }
