@@ -12,6 +12,7 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 
 const schema = z.object({
+  isbn: z.string(),
   titulo: z.string(),
   editora: z.string(),
   edicao: z.number(),
@@ -52,12 +53,14 @@ export default function EditarLivroPage() {
         setLivroId(livro.id)
         setExemplares(livro.exemplares)
         reset({
-          titulo: livro.titulo,
-          editora: livro.editora,
-          edicao: livro.edicao,
-          categoria: livro.categoria,
-          autores: livro.autores
-        })
+  isbn: livro.isbn,
+  titulo: livro.titulo,
+  editora: livro.editora,
+  edicao: livro.edicao,
+  categoria: livro.categoria,
+  autores: livro.autores
+})
+
       })
       .catch(() => toast.error("Erro ao carregar livro"))
 
@@ -123,6 +126,8 @@ export default function EditarLivroPage() {
     <main className="max-w-3xl mx-auto p-6 space-y-6">
       <h1 className="text-3xl font-bold">Editar Livro</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+        <Input placeholder="ISBN" {...register("isbn")} disabled />
+        
         <Input placeholder="Título" {...register("titulo")} />
         {errors.titulo && <p className="text-sm text-red-500">{errors.titulo.message}</p>}
 
