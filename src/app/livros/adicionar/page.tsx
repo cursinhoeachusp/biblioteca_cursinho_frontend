@@ -1,12 +1,14 @@
-// app/livros/novo/page.tsx
 'use client'
 
-import { useForm } from "react-hook-form"
+import { useForm, Controller } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useRouter } from "next/navigation"
+import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { MultiSelectAutores } from "./MultiSelectAutores"
+import { toast } from "sonner"
 
 const livroSchema = z.object({
   isbn: z.string().min(1, "ISBN obrigatório"),
@@ -15,34 +17,75 @@ const livroSchema = z.object({
   edicao: z.coerce.number().int().min(1, "Edição obrigatória"),
   categoria: z.string().min(1, "Categoria obrigatória"),
   quantidade_exemplares: z.coerce.number().int().min(1, "Informe ao menos 1 exemplar"),
+  autores: z.array(z.object({ id: z.union([z.string(), z.number()]), nome: z.string() })).min(1, "Informe ao menos um autor")
 })
 
 type LivroForm = z.infer<typeof livroSchema>
+type Autor = { id: string | number, nome: string }
 
 export default function NovaPaginaLivro() {
   const router = useRouter()
+  const [autoresDisponiveis, setAutoresDisponiveis] = useState<Autor[]>([])
+
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
     reset,
   } = useForm<LivroForm>({
     resolver: zodResolver(livroSchema),
+    defaultValues: { autores: [] },
   })
+
+  useEffect(() => {
+    fetch("https://cpe-biblioteca-ddf34b5779af.herokuapp.com/autores")
+      .then(res => res.json())
+      .then(setAutoresDisponiveis)
+      .catch(console.error)
+  }, [])
 
   async function onSubmit(data: LivroForm) {
     try {
       const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          isbn: data.isbn,
+          titulo: data.titulo,
+          editora: data.editora,
+          edicao: data.edicao,
+          categoria: data.categoria,
+          quantidade_exemplares: data.quantidade_exemplares
+        }),
       })
-      if (!res.ok) throw new Error('Erro ao cadastrar livro. Revise os campos e tente novamente!')
+
+      if (!res.ok) throw new Error('Erro ao cadastrar livro')
+
+      const livroCriado = await res.json()
+
+      for (const autor of data.autores) {
+        await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/autor', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            livroId: livroCriado.id,
+            autorId: autor.id
+          }),
+        })
+      }
+
+      toast.success("Livro cadastrado com sucesso!", {
+        description: "O livro e seus autores foram cadastrados.",
+      })
+
       reset()
       router.push('/')
     } catch (err) {
       console.error(err)
-      alert("Erro ao adicionar livro. Revise os campos e tente novamente!")
+      toast.error("Erro ao cadastrar livro", {
+        description: "Falha ao salvar livro ou associar autores.",
+      })
     }
   }
 
@@ -74,7 +117,20 @@ export default function NovaPaginaLivro() {
           <Input type="number" placeholder="Quantidade de exemplares" {...register("quantidade_exemplares")} />
           {errors.quantidade_exemplares && <p className="text-sm text-red-500">{errors.quantidade_exemplares.message}</p>}
         </div>
-        
+        <div>
+          <Controller
+            name="autores"
+            control={control}
+            render={({ field }) => (
+              <MultiSelectAutores
+                autoresDisponiveis={autoresDisponiveis}
+                value={field.value}
+                onChange={field.onChange}
+              />
+            )}
+          />
+          {errors.autores && <p className="text-sm text-red-500">{errors.autores.message}</p>}
+        </div>
         <div className="pt-4">
           <Button type="submit">Salvar</Button>
         </div>
