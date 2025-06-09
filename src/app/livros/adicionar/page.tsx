@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { MultiSelectAutores } from "./MultiSelectAutores"
+import { MultiSelectAutores } from "../MultiSelectAutores"
 import { toast } from "sonner"
 
 const livroSchema = z.object({
