@@ -186,7 +186,7 @@ export default function LivrosPage() {
     <main className="p-16">
       <h1 className="text-6xl font-bold mb-8">Livros</h1>
 
-      <div className="relative flex flex-row items-center gap-4 mb-4">
+      <div className="relative flex flex-row flex-wrap items-center gap-4 mb-4">
         <Input
           placeholder="Buscar..."
           value={search}
