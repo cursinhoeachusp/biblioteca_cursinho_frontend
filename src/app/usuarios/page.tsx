@@ -6,6 +6,7 @@ import { columns } from '../components/columns'
 import { Input } from "@/components/ui/input"
 import { AdicionarUsuarioBotao } from '../components/add-user-button'
 import { Usuario } from '@/app/components/columns'
+import { BatchAddButton } from '../components/batch-add-button'
 import { DeleteModal } from '../components/DeleteModal'
 import { EditModal } from '../components/EditModal'
 
@@ -18,6 +19,7 @@ export default function UsuariosPage() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
   const [refresh, setRefresh] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
 
   // Configura listeners para eventos de modais
   useEffect(() => {
@@ -132,7 +134,36 @@ export default function UsuariosPage() {
     }
   }
 
+  const handleBatchUpload = async (usuarios: Partial<Usuario>[]) => {
+    if (usuarios.length === 0) {
+      alert("O arquivo CSV está vazio ou em formato incorreto.");
+      return;
+    }
 
+    setIsUploading(true);
+    try {
+      const response = await fetch('http://localhost:3001/usuarios/batch', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuarios }), // Envia um objeto com a chave "usuarios"
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Erro ao adicionar usuários em lote');
+      }
+
+      const result = await response.json();
+      alert(result.message || 'Usuários adicionados com sucesso!');
+      setRefresh(prev => !prev); // Atualiza a lista de usuários
+
+    } catch (error) {
+      console.error('Erro no upload em lote:', error);
+      alert(error instanceof Error ? error.message : 'Erro desconhecido');
+    } finally {
+      setIsUploading(false);
+    }
+  };
 
   const termo = search.toLowerCase()
   const usuariosFiltrados = todosUsuarios.filter((usuario) => {
@@ -185,8 +216,9 @@ export default function UsuariosPage() {
             <option value="cpf">CPF</option>
           </select>
 
-          <div className='absolute right-0'>
+          <div className='absolute right-0 flex gap-2'>
             <AdicionarUsuarioBotao />
+            <BatchAddButton onUpload={handleBatchUpload} isUploading={isUploading} />
           </div>
         </div>
 
