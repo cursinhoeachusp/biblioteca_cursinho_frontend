@@ -6,21 +6,52 @@ import { columns } from '../components/columns'
 import { Input } from "@/components/ui/input"
 import { AdicionarUsuarioBotao } from '../components/add-user-button'
 import { Usuario } from '@/app/components/columns'
+import { DeleteModal } from '../components/DeleteModal'
+import { EditModal } from '../components/EditModal'
 
 export default function UsuariosPage() {
   const [todosUsuarios, setTodosUsuarios] = useState<Usuario[]>([])
   const [usuariosAtrasados, setUsuariosAtrasados] = useState<Usuario[]>([])
   const [search, setSearch] = useState("")
   const [filtro, setFiltro] = useState<"nome" | "id" | "cpf">("nome")
+  const [showDeleteModal, setShowDeleteModal] = useState(false)
+  const [showEditModal, setShowEditModal] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
+  const [refresh, setRefresh] = useState(false)
 
+  // Configura listeners para eventos de modais
+  useEffect(() => {
+    const handleDeleteModal = (e: Event) => {
+      const customEvent = e as CustomEvent<number>
+      setSelectedUserId(customEvent.detail)
+      setShowDeleteModal(true)
+    }
+
+    const handleEditModal = (e: Event) => {
+      const customEvent = e as CustomEvent<number>
+      setSelectedUserId(customEvent.detail)
+      setShowEditModal(true)
+    }
+
+    document.addEventListener('openDeleteModal', handleDeleteModal as EventListener)
+    document.addEventListener('openEditModal', handleEditModal as EventListener)
+
+    return () => {
+      document.removeEventListener('openDeleteModal', handleDeleteModal as EventListener)
+      document.removeEventListener('openEditModal', handleEditModal as EventListener)
+    }
+  }, [])
+
+  // Busca usuários com possibilidade de refresh
   useEffect(() => {
     async function fetchUsuarios() {
       try {
-        const resTodos = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios')
+        // Use o backend local em vez do Heroku
+        const resTodos = await fetch('http://localhost:3001/usuarios')
         const dataTodos = await resTodos.json()
         setTodosUsuarios(dataTodos)
 
-        const resAtrasados = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/atrasados')
+        const resAtrasados = await fetch('http://localhost:3001/usuarios/atrasados')
         const dataAtrasados = await resAtrasados.json()
         setUsuariosAtrasados(dataAtrasados)
       } catch (error) {
@@ -29,24 +60,110 @@ export default function UsuariosPage() {
     }
 
     fetchUsuarios()
-  }, [])
+  }, [refresh])
+
+
+  const handleDelete = async () => {
+    try {
+      if (!selectedUserId) return
+
+      // Use o backend local, não o Heroku
+      const response = await fetch(
+        `http://localhost:3001/usuarios/${selectedUserId}`,
+        { method: 'DELETE' }
+      )
+
+      // Verifique o tipo de conteúdo antes de tentar parsear JSON
+      const contentType = response.headers.get('content-type')
+
+      if (!response.ok) {
+        // Se não é JSON, pegue como texto
+        if (contentType?.includes('application/json')) {
+          const errorData = await response.json()
+          throw new Error(errorData.message || 'Erro ao excluir usuário')
+        } else {
+          const errorText = await response.text()
+          throw new Error(`Erro ${response.status}: ${errorText}`)
+        }
+      }
+
+      alert('Usuário excluído com sucesso!')
+      setRefresh(prev => !prev)
+      setShowDeleteModal(false)
+    } catch (error) {
+      console.error('Erro completo:', error)
+      alert(error instanceof Error ? error.message : 'Erro desconhecido')
+      setShowDeleteModal(false)
+    }
+  }
+
+  const handleEdit = async (data: Partial<Usuario>) => {
+    try {
+      if (!selectedUserId) return
+
+      const response = await fetch(
+        `http://localhost:3001/usuarios/${selectedUserId}`,
+        {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        }
+      )
+
+      const contentType = response.headers.get('content-type')
+      if (!response.ok) {
+        let errorMsg = 'Erro ao atualizar usuário'
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json()
+          errorMsg = errorData.message || errorMsg
+        } else {
+          const errorText = await response.text()
+          errorMsg = errorText || errorMsg
+        }
+        throw new Error(errorMsg)
+      }
+
+      alert('Usuário atualizado com sucesso!')
+      setRefresh(prev => !prev)
+      setShowEditModal(false)
+    } catch (error) {
+      alert(error instanceof Error ? error.message : 'Erro desconhecido')
+      setShowEditModal(false)
+    }
+  }
+
+
 
   const termo = search.toLowerCase()
-
-  // Filtra todos os usuários (se houver busca)
   const usuariosFiltrados = todosUsuarios.filter((usuario) => {
-    if (filtro === "id") {
-      return usuario.id.toString().includes(termo)
-    }
-    if (filtro === "cpf") {
-      return usuario.cpf.toString().includes(termo)
-    }
-    // padrão: nome
+    if (filtro === "id") return usuario.id.toString().includes(termo)
+    if (filtro === "cpf") return usuario.cpf.toString().includes(termo)
     return usuario.nome.toLowerCase().includes(termo)
   })
 
   return (
     <main>
+      <DeleteModal
+        isOpen={showDeleteModal}
+        onClose={() => setShowDeleteModal(false)}
+        onConfirm={handleDelete}
+      />
+
+      <EditModal
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        userId={selectedUserId}
+        onSave={(data) =>
+          handleEdit({
+            ...data,
+            status:
+              data.status === "Regular" || data.status === "Bloqueado"
+                ? data.status
+                : "Regular", // fallback or handle as needed
+          })
+        }
+      />
+
       <div className='p-16'>
         <h1 className="text-6xl font-bold mb-8">Usuários</h1>
 
@@ -57,6 +174,7 @@ export default function UsuariosPage() {
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-md"
           />
+
           <select
             value={filtro}
             onChange={(e) => setFiltro(e.target.value as "nome" | "id" | "cpf")}
@@ -66,6 +184,7 @@ export default function UsuariosPage() {
             <option value="id">ID</option>
             <option value="cpf">CPF</option>
           </select>
+
           <div className='absolute right-0'>
             <AdicionarUsuarioBotao />
           </div>
