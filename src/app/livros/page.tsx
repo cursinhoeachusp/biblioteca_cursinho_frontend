@@ -160,7 +160,11 @@ export default function LivrosPage() {
               Realizar empréstimo
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => console.log('Reserva', row.original)}
+              onClick={() =>
+                router.push(
+                  `/reservas/adicionar?isbn=${row.original.isbn}&titulo=${encodeURIComponent(row.original.titulo)}`
+                )
+              }
             >
               Realizar reserva
             </DropdownMenuItem>

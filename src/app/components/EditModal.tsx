@@ -54,7 +54,7 @@ export function EditModal({
     useEffect(() => {
         if (userId && isOpen) {
             setLoading(true)
-            fetch(`http://localhost:3001/usuarios/${userId}`)
+            fetch(`http://localhost:3999/usuarios/${userId}`)
                 .then(res => {
                     if (!res.ok) throw new Error('Erro ao carregar dados');
                     return res.json()

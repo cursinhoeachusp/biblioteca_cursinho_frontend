@@ -36,7 +36,7 @@ export default function NovoUsuarioPage() {
 
   async function onSubmit(data: UsuarioForm) {
     try {
-      const res = await fetch('http://localhost:3001/usuarios', {
+      const res = await fetch('http://localhost:3999/usuarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
