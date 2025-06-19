@@ -9,6 +9,16 @@ import { Usuario } from '@/app/components/columns'
 import { BatchAddButton } from '../components/batch-add-button'
 import { DeleteModal } from '../components/DeleteModal'
 import { EditModal } from '../components/EditModal'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from '@/components/ui/select'
+
+type CampoBusca = 'id' | 'cpf' | 'nome' 
+
 
 export default function UsuariosPage() {
   const [todosUsuarios, setTodosUsuarios] = useState<Usuario[]>([])
@@ -20,6 +30,8 @@ export default function UsuariosPage() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null)
   const [refresh, setRefresh] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
+  const [campoBusca, setCampoBusca] = useState<CampoBusca>('nome')
+  
 
   // Configura listeners para eventos de modais
   useEffect(() => {
@@ -167,8 +179,8 @@ export default function UsuariosPage() {
 
   const termo = search.toLowerCase()
   const usuariosFiltrados = todosUsuarios.filter((usuario) => {
-    if (filtro === "id") return usuario.id.toString().includes(termo)
-    if (filtro === "cpf") return usuario.cpf.toString().includes(termo)
+    if (campoBusca === "id") return usuario.id.toString().includes(termo)
+    if (campoBusca === "cpf") return usuario.cpf.toString().includes(termo)
     return usuario.nome.toLowerCase().includes(termo)
   })
 
@@ -198,25 +210,28 @@ export default function UsuariosPage() {
       <div className='p-16'>
         <h1 className="text-6xl font-bold mb-8">Usuários</h1>
 
-        <div className='relative flex flex-row gap-2'>
+        <div className="relative flex flex-row flex-wrap items-center gap-4 mb-4">
           <Input
-            placeholder={`Buscar por ${filtro}`}
+            placeholder="Buscar..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="max-w-md"
           />
-
-          <select
-            value={filtro}
-            onChange={(e) => setFiltro(e.target.value as "nome" | "id" | "cpf")}
-            className="border rounded px-2 py-1"
+          <Select
+            onValueChange={(value) => setCampoBusca(value as CampoBusca)}
+            value={campoBusca}
           >
-            <option value="nome">Nome</option>
-            <option value="id">ID</option>
-            <option value="cpf">CPF</option>
-          </select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Campo de busca" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="id">ID</SelectItem>
+              <SelectItem value="cpf">CPF</SelectItem>
+              <SelectItem value="nome">Nome</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <div className='absolute right-0 flex gap-2'>
+        <div className="ml-auto flex gap-2">
             <AdicionarUsuarioBotao />
             <BatchAddButton onUpload={handleBatchUpload} isUploading={isUploading} />
           </div>
