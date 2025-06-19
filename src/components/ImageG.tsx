@@ -19,8 +19,14 @@ interface GImageProps extends ImageProps {
 // };
 
 const ImageG: React.FC<GImageProps> = ({ src, ...props }) => {
-    // Remova a lógica de pathway se não for GitHub Pages
-    return <Image src={src} {...props} />;
+    // const pathway = process.env.NODE_ENV === "production" ? '/biblioteca_cursinho_frontend' : '';
+    const pathway = ""; 
+    return (
+        <Image
+            src={pathway + src}
+            {...props}
+        />
+    );
 };
 
 export default ImageG;
