@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import {
@@ -20,7 +20,7 @@ import { cn } from "@/lib/utils"
 type Usuario = { id: number; nome: string; cpf: string }
 type Exemplar = { codigo: string }
 
-export default function NovaReservaPage() {
+function ReservaForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
@@ -225,5 +225,13 @@ export default function NovaReservaPage() {
                 </div>
             </form>
         </main>
+    )
+}
+
+export default function NovaReservaPage() {
+    return (
+        <Suspense fallback={<div className="p-8">Carregando formulário...</div>}>
+            <ReservaForm />
+        </Suspense>
     )
 }
