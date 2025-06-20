@@ -1,6 +1,7 @@
+// components/columns.tsx
 import { ColumnDef } from '@tanstack/react-table'
 import { AddressDialog } from "./address-dialog"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal, Trash2, Pencil } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,11 +12,11 @@ import {
 export type Usuario = {
   id: number
   nome: string
-  email: string
+  gmail: string // ajuste para o campo usado no backend
   telefone: string
   status: 'Regular' | 'Bloqueado'
   address: string
-  cpf: number
+  cpf: string // altere para string para preservar zeros à esquerda
 }
 
 export const columns: ColumnDef<Usuario>[] = [
@@ -28,12 +29,16 @@ export const columns: ColumnDef<Usuario>[] = [
     header: 'Nome',
   },
   {
-    accessorKey: 'email',
+    accessorKey: 'gmail', // ajuste para o campo usado no backend
     header: 'E-mail',
   },
   {
     accessorKey: 'telefone',
     header: 'Telefone',
+  },
+  {
+    accessorKey: 'cpf',
+    header: 'CPF',
   },
   {
     accessorKey: 'status',
@@ -55,13 +60,12 @@ export const columns: ColumnDef<Usuario>[] = [
   },
   {
     id: 'acoes',
-    header: 'Ação',
+    header: 'Endereço',
     cell: ({ row }) => {
       const address = row.original.address
-      const nome = row.getValue('nome') as string // ou o nome da sua coluna de nome
+      const nome = row.getValue('nome') as string
       return <AddressDialog address={address} nome={nome} />
     }
-    
   },
   {
     id: 'menu',
@@ -77,16 +81,20 @@ export const columns: ColumnDef<Usuario>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuItem
               onClick={() => {
-                console.log('Editar', row.original)
+                // Dispara evento para abrir modal de edição
+                document.dispatchEvent(new CustomEvent('openEditModal', { detail: row.original.id }))
               }}
             >
+              <Pencil className="h-4 w-4 mr-2" />
               Editar registro
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => {
-                console.log('Excluir', row.original)
+                // Dispara evento para abrir modal de exclusão
+                document.dispatchEvent(new CustomEvent('openDeleteModal', { detail: row.original.id }))
               }}
             >
+              <Trash2 className="h-4 w-4 mr-2 text-red-500" />
               Excluir registro
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -95,5 +103,3 @@ export const columns: ColumnDef<Usuario>[] = [
     },
   },
 ]
-
-
