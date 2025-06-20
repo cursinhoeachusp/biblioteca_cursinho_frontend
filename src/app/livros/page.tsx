@@ -155,7 +155,7 @@ export default function LivrosPage() {
               disabled={
                 Number(row.original.exemplares_disponiveis) === 0
               }
-              onClick={() => console.log('Emprestimo', row.original)}
+              onClick={() => window.location.href = '/emprestimos/adicionar'}
             >
               Realizar empréstimo
             </DropdownMenuItem>
