@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import { DataTable } from '../components/data-table'
 import { columns } from '../components/columns'
 import { Input } from "@/components/ui/input"
@@ -9,6 +10,8 @@ import { Usuario } from '@/app/components/columns'
 import { BatchAddButton } from '../components/batch-add-button'
 import { DeleteModal } from '../components/DeleteModal'
 import { EditModal } from '../components/EditModal'
+import { Botao } from '../components/botao'
+
 import {
   Select,
   SelectContent,
@@ -17,10 +20,11 @@ import {
   SelectValue
 } from '@/components/ui/select'
 
-type CampoBusca = 'id' | 'cpf' | 'nome' 
+type CampoBusca = 'id' | 'cpf' | 'nome'
 
 
 export default function UsuariosPage() {
+  const router = useRouter()
   const [todosUsuarios, setTodosUsuarios] = useState<Usuario[]>([])
   const [usuariosAtrasados, setUsuariosAtrasados] = useState<Usuario[]>([])
   const [search, setSearch] = useState("")
@@ -31,7 +35,7 @@ export default function UsuariosPage() {
   const [refresh, setRefresh] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
   const [campoBusca, setCampoBusca] = useState<CampoBusca>('nome')
-  
+
 
   // Configura listeners para eventos de modais
   useEffect(() => {
@@ -221,7 +225,7 @@ export default function UsuariosPage() {
             onValueChange={(value) => setCampoBusca(value as CampoBusca)}
             value={campoBusca}
           >
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[100px]">
               <SelectValue placeholder="Campo de busca" />
             </SelectTrigger>
             <SelectContent>
@@ -231,8 +235,11 @@ export default function UsuariosPage() {
             </SelectContent>
           </Select>
 
-        <div className="ml-auto flex gap-2">
-            <AdicionarUsuarioBotao />
+          <div className="ml-auto flex gap-2">
+            <Botao
+              texto="Adicionar usuário"
+              onClick={() => router.push('/usuarios/novo')}
+            />
             <BatchAddButton onUpload={handleBatchUpload} isUploading={isUploading} />
           </div>
         </div>
