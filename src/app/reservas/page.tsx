@@ -1,6 +1,7 @@
 // app/reserva/page.tsx
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -22,6 +23,7 @@ interface Reserva {
 }
 
 export default function ReservaPage() {
+  const router = useRouter()
   const [reservas, setReservas] = useState<Reserva[]>([])
   const [buscaLivro, setBuscaLivro] = useState('')
 
@@ -98,7 +100,7 @@ export default function ReservaPage() {
           className="max-w-md"
         />
         <div className="md:ml-auto">
-          <Botao texto="Adicionar Reserva" onClick={() => window.location.href = '/reservas/adicionar'} />
+          <Botao texto="Adicionar Reserva" onClick={() => router.push('/reservas/adicionar')} />
         </div>
       </div>
 

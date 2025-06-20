@@ -1,5 +1,5 @@
 'use client'
-
+import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -38,6 +38,7 @@ interface Emprestimo {
 }
 
 export default function EmprestimosPage() {
+  const router = useRouter()
   const [emprestimos, setEmprestimos] = useState<Emprestimo[]>([])
   const [busca, setBusca] = useState('')
   const [filtroData, setFiltroData] = useState<'inicio' | 'devolucao'>('inicio')
@@ -226,7 +227,7 @@ export default function EmprestimosPage() {
           </SelectContent>
         </Select>
         <div className="md:ml-auto">
-          <Botao texto="Adicionar Empréstimo" onClick={() => window.location.href = '/emprestimos/adicionar'} />
+          <Botao texto="Adicionar Empréstimo" onClick={() => router.push('/emprestimos/adicionar')} />
         </div>
       </div>
 

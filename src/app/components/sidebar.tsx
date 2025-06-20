@@ -8,8 +8,8 @@ const links = [
   { label: 'Livros', href: '/', icon: BookOpen },
   { label: 'Autores', href: '/autores', icon: SquarePen },
   { label: 'Empréstimos', href: '/emprestimos', icon: RefreshCcw },
-  { label: 'Reserva', href: '/reserva', icon: Clock },
-  { label: 'Penalidade', href: '/penalidade', icon: Gavel },
+  { label: 'Reservas', href: '/reservas', icon: Clock },
+  { label: 'Penalidades', href: '/penalidades', icon: Gavel },
   { label: 'Usuários', href: '/usuarios', icon: Users },
 ]
 

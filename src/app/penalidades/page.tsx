@@ -141,7 +141,7 @@ export default function PenalidadesPage() {
             className="max-w-md"
           />
           <div className="absolute right-0">
-            <Botao texto="Adicionar Penalidade" onClick={() => router.push('/penalidade/adicionar')} />
+            <Botao texto="Adicionar Penalidade" onClick={() => router.push('/penalidades/adicionar')} />
           </div>
         </div>
 
