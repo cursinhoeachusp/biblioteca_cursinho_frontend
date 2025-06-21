@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation'
 import { DataTable } from '../components/data-table'
 import { columns } from '../components/columns'
 import { Input } from "@/components/ui/input"
-import { AdicionarUsuarioBotao } from '../components/add-user-button'
 import { Usuario } from '@/app/components/columns'
 import { BatchAddButton } from '../components/batch-add-button'
 import { DeleteModal } from '../components/DeleteModal'
