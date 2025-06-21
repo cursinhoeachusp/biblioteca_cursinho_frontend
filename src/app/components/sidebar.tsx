@@ -6,7 +6,6 @@ import { cn } from '@/lib/utils'
 
 const links = [
   { label: 'Livros', href: '/', icon: BookOpen },
-  { label: 'Autores', href: '/autores', icon: SquarePen },
   { label: 'Empréstimos', href: '/emprestimos', icon: RefreshCcw },
   { label: 'Reservas', href: '/reservas', icon: Clock },
   { label: 'Penalidades', href: '/penalidades', icon: Gavel },
