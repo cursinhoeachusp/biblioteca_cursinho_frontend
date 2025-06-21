@@ -65,7 +65,7 @@ export default function PenalidadesPage() {
   }, [])
 
   const penalidadesFiltradas = penalidades.filter((penalidade) =>
-    penalidade.usuarioNome.toLowerCase().includes(search.toLowerCase())
+    (penalidade.usuarioNome ?? '').toLowerCase().includes(search.toLowerCase())
   )
 
   const penalidadesPendentes = penalidadesFiltradas.filter(p => !p.statusCumprida)

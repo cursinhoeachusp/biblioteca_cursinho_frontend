@@ -16,7 +16,9 @@ const schema = z.object({
   exemplar_codigo: z.string().min(1, 'Exemplar obrigatório'),
   emprestimo_data_inicio: z.string().min(1, 'Data de início obrigatória'),
   data_aplicacao: z.string().min(1, 'Data de aplicação obrigatória'),
-  tipo_id: z.union([z.string(), z.number()]).optional(),
+  tipo_id: z.union([z.string(), z.number()]).refine(val => val !== '', {
+    message: 'Tipo é obrigatório',
+  }),
   causa_id: z.union([z.string(), z.number()]).refine(val => val !== '' && val !== undefined && val !== null, {
     message: 'Causa obrigatória',
   }),
@@ -30,7 +32,7 @@ export default function AdicionarPenalidadePage() {
   const [tipoReposicaoId, setTipoReposicaoId] = useState<number | null>(null)
   const [causaNome, setCausaNome] = useState<string>('')
 
-  const { register, handleSubmit, watch, setValue, getValues, setError, formState: { errors } } = useForm({
+  const { register, handleSubmit, watch, setValue, setError, formState: { errors } } = useForm({
     resolver: zodResolver(schema),
     defaultValues: {
       usuario_id: '',
@@ -46,7 +48,6 @@ export default function AdicionarPenalidadePage() {
   const causa_id = watch('causa_id')
   const tipo_id = watch('tipo_id')
   const dataEmprestimo = watch('emprestimo_data_inicio')
-  const dataSuspensao = watch('data_suspensao')
 
   useEffect(() => {
     fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/penalidade/tipos')
@@ -92,27 +93,34 @@ export default function AdicionarPenalidadePage() {
     }
 
     try {
+      const payload = {
+        ...data,
+        tipo_id: data.tipo_id ? Number(data.tipo_id) : null,
+        causa_id: Number(data.causa_id)
+      }
+
       const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/penalidade', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       })
 
       if (!res.ok) {
         const errText = await res.text()
+        console.error('Erro backend:', errText)
 
         setError('usuario_id', { type: 'manual', message: 'Verifique o ID do usuário ou vínculo com o empréstimo.' })
         setError('exemplar_codigo', { type: 'manual', message: 'Verifique o código do exemplar.' })
         setError('emprestimo_data_inicio', { type: 'manual', message: 'Data inválida ou empréstimo inexistente.' })
 
         toast.error('Erro ao cadastrar penalidade', {
-          description: 'Verifique se o empréstimo existe com base no usuário, exemplar e data informados.'
+          description: errText || 'Verifique os campos informados.'
         })
         return
       }
 
       toast.success('Penalidade adicionada com sucesso!')
-      router.push('/penalidade')
+      router.push('/penalidades')
     } catch (err: any) {
       toast.error('Erro ao cadastrar penalidade', {
         description: err.message
@@ -133,6 +141,12 @@ export default function AdicionarPenalidadePage() {
 
         <Input placeholder="Código do exemplar" {...register('exemplar_codigo')} />
         {errors.exemplar_codigo && <p className="text-sm text-red-500 mt-1">{errors.exemplar_codigo.message}</p>}
+
+        <div>
+          <p className="text-xs text-muted-foreground mb-1">Data de início do empréstimo</p>
+          <Input type="date" placeholder="dd/mm/aaaa" {...register('emprestimo_data_inicio')} />
+          {errors.emprestimo_data_inicio && <p className="text-sm text-red-500 mt-1">{errors.emprestimo_data_inicio.message}</p>}
+        </div>
 
         <Select key={String(causa_id)} value={String(causa_id)} onValueChange={v => setValue('causa_id', Number(v))}>
           <SelectTrigger>
@@ -162,12 +176,6 @@ export default function AdicionarPenalidadePage() {
             </SelectContent>
           </Select>
           {errors.tipo_id && <p className="text-sm text-red-500 mt-1">{errors.tipo_id.message}</p>}
-        </div>
-
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Data de início do empréstimo</p>
-          <Input type="date" placeholder="dd/mm/aaaa" {...register('emprestimo_data_inicio')} />
-          {errors.emprestimo_data_inicio && <p className="text-sm text-red-500 mt-1">{errors.emprestimo_data_inicio.message}</p>}
         </div>
 
         <div>
