@@ -194,9 +194,6 @@ export default function EmprestimosPage() {
             <DropdownMenuContent>
               <DropdownMenuItem disabled={e.renovado || devolvido} onClick={() => renovarEmprestimo(e)}>Renovar</DropdownMenuItem>
               <DropdownMenuItem disabled={devolvido} onClick={() => marcarComoDevolvido(e)}>Marcar como Devolvido</DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href={`/emprestimo/editar?usuario_id=${e.usuario_id}&exemplar_codigo=${e.exemplar_codigo}&data_inicio=${e.data_inicio}`}>Editar</Link>
-              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 setEmprestimoSelecionado(e)
                 setConfirmandoExclusao(true)
