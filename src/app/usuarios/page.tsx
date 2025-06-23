@@ -63,12 +63,11 @@ export default function UsuariosPage() {
   useEffect(() => {
     async function fetchUsuarios() {
       try {
-        // Use o backend local em vez do Heroku
-        const resTodos = await fetch('http://localhost:3999/usuarios')
+        const resTodos = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios')
         const dataTodos = await resTodos.json()
         setTodosUsuarios(dataTodos)
 
-        const resAtrasados = await fetch('http://localhost:3999/usuarios/atrasados')
+        const resAtrasados = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/atrasados')
         const dataAtrasados = await resAtrasados.json()
         setUsuariosAtrasados(dataAtrasados)
       } catch (error) {
@@ -86,7 +85,7 @@ export default function UsuariosPage() {
 
       // Use o backend local, não o Heroku
       const response = await fetch(
-        `http://localhost:3999/usuarios/${selectedUserId}`,
+        `https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/${selectedUserId}`,
         { method: 'DELETE' }
       )
 
@@ -119,7 +118,7 @@ export default function UsuariosPage() {
       if (!selectedUserId) return
 
       const response = await fetch(
-        `http://localhost:3999/usuarios/${selectedUserId}`,
+        `https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/${selectedUserId}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -157,7 +156,7 @@ export default function UsuariosPage() {
 
     setIsUploading(true);
     try {
-      const response = await fetch('http://localhost:3999/usuarios/batch', {
+      const response = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarios }), // Envia um objeto com a chave "usuarios"
