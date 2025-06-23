@@ -1,5 +1,6 @@
 'use client'
-
+import { formatInTimeZone } from 'date-fns-tz'
+import { format, parseISO } from 'date-fns'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
@@ -7,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Botao } from '../components/botao'
 import { DataTable } from '@/app/components/data-table'
 import { ColumnDef } from '@tanstack/react-table'
-import { format } from 'date-fns'
 import { MoreHorizontal, ArrowDown, ArrowUp } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
@@ -152,12 +152,12 @@ export default function EmprestimosPage() {
           Início {filtroData === 'inicio' && (ordemCrescente ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
         </button>
       ),
-      cell: ({ row }) => format(new Date(row.original.data_inicio), 'dd/MM/yyyy')
+      cell: ({ row }) => formatInTimeZone(parseISO(row.original.data_inicio), 'UTC', 'dd/MM/yyyy')
     },
     {
       accessorKey: 'data_fim_previsto',
       header: 'Fim Previsto',
-      cell: ({ row }) => format(new Date(row.original.data_fim_previsto), 'dd/MM/yyyy')
+      cell: ({ row }) => formatInTimeZone(parseISO(row.original.data_fim_previsto), 'UTC', 'dd/MM/yyyy')
     },
     {
       accessorKey: 'data_devolucao',
@@ -172,7 +172,9 @@ export default function EmprestimosPage() {
           Devolução {filtroData === 'devolucao' && (ordemCrescente ? <ArrowUp size={14} /> : <ArrowDown size={14} />)}
         </button>
       ),
-      cell: ({ row }) => row.original.data_devolucao ? format(new Date(row.original.data_devolucao), 'dd/MM/yyyy') : '—'
+      cell: ({ row }) => row.original.data_devolucao
+        ? formatInTimeZone(parseISO(row.original.data_devolucao), 'UTC', 'dd/MM/yyyy')
+        : '—'
     },
     {
       accessorKey: 'renovado',
