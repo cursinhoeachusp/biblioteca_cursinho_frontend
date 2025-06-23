@@ -19,11 +19,11 @@ interface GImageProps extends ImageProps {
 // };
 
 const ImageG: React.FC<GImageProps> = ({ src, ...props }) => {
-    // const pathway = process.env.NODE_ENV === "production" ? '/biblioteca_cursinho_frontend' : '';
-    const pathway = "/biblioteca_cursinho_frontend"; 
+    //const pathway = process.env.NODE_ENV === "production" ? '/biblioteca_cursinho_frontend' : '';
+    //const pathway = "/biblioteca_cursinho_frontend"; 
     return (
         <Image
-            src={pathway + src}
+            src={src}
             {...props}
         />
     );
