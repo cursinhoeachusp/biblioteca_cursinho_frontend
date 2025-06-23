@@ -44,8 +44,7 @@ function ReservaForm() {
         async function fetchExemplares() {
             if (!isbn) return
             try {
-                const res = await fetch(`'https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/${isbn}/exemplares-indisponiveis'`)
-                // const res = await fetch(`http://localhost:3999/livros/${isbn}/exemplares-indisponiveis`)
+                const res = await fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/${isbn}/exemplares-indisponiveis`)
                 const data = await res.json()
                 setExemplares(data)
             } catch (error) {
@@ -68,7 +67,6 @@ function ReservaForm() {
         const delayDebounceFn = setTimeout(async () => {
             try {
                 const res = await fetch(`'https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/search?q=${userSearchQuery}`)
-                // const res = await fetch(`http://localhost:3999/usuarios/search?q=${userSearchQuery}`)
                 const data = await res.json()
                 if (Array.isArray(data)) {
                     // Se a resposta FOR um array, nós atualizamos o estado com os resultados.
