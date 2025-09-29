@@ -36,7 +36,7 @@ export default function NovoUsuarioPage() {
 
   async function onSubmit(data: UsuarioForm) {
     try {
-      const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios', {
+      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),

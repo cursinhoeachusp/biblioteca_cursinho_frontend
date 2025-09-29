@@ -44,7 +44,7 @@ function ReservaForm() {
         async function fetchExemplares() {
             if (!isbn) return
             try {
-                const res = await fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/${isbn}/exemplares-indisponiveis`)
+                const res = await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/${isbn}/exemplares-indisponiveis`)
                 const data = await res.json()
                 setExemplares(data)
             } catch (error) {
@@ -66,7 +66,7 @@ function ReservaForm() {
         // Debounce: espera 300ms após o usuário parar de digitar para fazer a busca
         const delayDebounceFn = setTimeout(async () => {
             try {
-                const res = await fetch(`'https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/search?q=${userSearchQuery}`)
+                const res = await fetch(`'https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/search?q=${userSearchQuery}`)
                 const data = await res.json()
                 if (Array.isArray(data)) {
                     // Se a resposta FOR um array, nós atualizamos o estado com os resultados.
@@ -99,7 +99,7 @@ function ReservaForm() {
 
         setIsLoading(true)
         try {
-            const response = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/reservas', {
+            const response = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/reservas', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

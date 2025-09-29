@@ -47,7 +47,7 @@ export default function EditarLivroPage() {
   })
 
   useEffect(() => {
-    fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/isbn/${isbn}`)
+    fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/isbn/${isbn}`)
       .then(res => res.json())
       .then(livro => {
         setLivroId(livro.id)
@@ -64,7 +64,7 @@ export default function EditarLivroPage() {
       })
       .catch(() => toast.error("Erro ao carregar livro"))
 
-    fetch("https://cpe-biblioteca-ddf34b5779af.herokuapp.com/autores")
+    fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/autores")
       .then(res => res.json())
       .then(setAutoresDisponiveis)
       .catch(console.error)
@@ -74,7 +74,7 @@ export default function EditarLivroPage() {
     if (!livroId) return
     try {
       setLoadingSubmit(true)
-      await fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/${livroId}`, {
+      await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/${livroId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -91,7 +91,7 @@ export default function EditarLivroPage() {
   async function removerExemplar(codigo: string) {
     try {
       setLoadingRemover(codigo)
-      await fetch(`https://cpe-biblioteca-ddf34b5779af.herokuapp.com/exemplar/${codigo}`, { method: "DELETE" })
+      await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/exemplar/${codigo}`, { method: "DELETE" })
       setExemplares(prev => prev.filter(e => e.codigo !== codigo))
       toast.success("Exemplar removido")
     } catch {
@@ -106,7 +106,7 @@ export default function EditarLivroPage() {
     if (!livroId) return
     try {
       setLoadingAdicionar(true)
-      const res = await fetch("https://cpe-biblioteca-ddf34b5779af.herokuapp.com/exemplares/adicionar", {
+      const res = await fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/exemplares/adicionar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ livro_id: livroId })

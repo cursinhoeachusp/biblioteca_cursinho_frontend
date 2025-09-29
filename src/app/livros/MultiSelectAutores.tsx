@@ -43,7 +43,7 @@ export function MultiSelectAutores({
 
     try {
       setCreating(true)
-      const res = await fetch("https://cpe-biblioteca-ddf34b5779af.herokuapp.com/autores", {
+      const res = await fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/autores", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome: input }),

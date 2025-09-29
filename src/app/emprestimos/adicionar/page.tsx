@@ -38,7 +38,7 @@ export default function AdicionarEmprestimoPage() {
 
   const onSubmit = async (data: any) => {
     try {
-      const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/emprestimos', {
+      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/emprestimos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)

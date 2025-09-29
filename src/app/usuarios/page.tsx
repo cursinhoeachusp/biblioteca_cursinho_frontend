@@ -63,11 +63,11 @@ export default function UsuariosPage() {
   useEffect(() => {
     async function fetchUsuarios() {
       try {
-        const resTodos = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios')
+        const resTodos = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios')
         const dataTodos = await resTodos.json()
         setTodosUsuarios(dataTodos)
 
-        const resAtrasados = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/atrasados')
+        const resAtrasados = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/atrasados')
         const dataAtrasados = await resAtrasados.json()
         setUsuariosAtrasados(dataAtrasados)
       } catch (error) {
@@ -85,7 +85,7 @@ export default function UsuariosPage() {
 
       // Use o backend local, não o Heroku
       const response = await fetch(
-        `https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/${selectedUserId}`,
+        `https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/${selectedUserId}`,
         { method: 'DELETE' }
       )
 
@@ -118,7 +118,7 @@ export default function UsuariosPage() {
       if (!selectedUserId) return
 
       const response = await fetch(
-        `https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/${selectedUserId}`,
+        `https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/${selectedUserId}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -156,7 +156,7 @@ export default function UsuariosPage() {
 
     setIsUploading(true);
     try {
-      const response = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/usuarios/batch', {
+      const response = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarios }), // Envia um objeto com a chave "usuarios"

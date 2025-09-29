@@ -29,7 +29,7 @@ export default function ReservaPage() {
 
   async function fetchReservas() {
     try {
-      const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/reservas')
+      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/reservas')
       const data = await res.json()
       setReservas(data)
     } catch {

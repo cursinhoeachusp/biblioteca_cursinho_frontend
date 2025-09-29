@@ -39,7 +39,7 @@ export default function NovaPaginaLivro() {
   })
 
   useEffect(() => {
-    fetch("https://cpe-biblioteca-ddf34b5779af.herokuapp.com/autores")
+    fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/autores")
       .then(res => res.json())
       .then(setAutoresDisponiveis)
       .catch(console.error)
@@ -47,7 +47,7 @@ export default function NovaPaginaLivro() {
 
   async function onSubmit(data: LivroForm) {
     try {
-      const res = await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros', {
+      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -65,7 +65,7 @@ export default function NovaPaginaLivro() {
       const livroCriado = await res.json()
 
       for (const autor of data.autores) {
-        await fetch('https://cpe-biblioteca-ddf34b5779af.herokuapp.com/livros/autor', {
+        await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/autor', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
