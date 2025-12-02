@@ -23,7 +23,7 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${poppins.className} antialiased`}>
         {/* Sidebar fixa */}
-        <div className="w-16 md:w-56 fixed top-0 left-0 h-screen w-64 z-50 transition-all duration-300">
+        <div className="w-14 md:w-56 fixed top-0 left-0 h-screen z-50 transition-all duration-300">
           <Sidebar />
         </div>
 
