@@ -29,6 +29,9 @@ function formatarData(data: string | null) {
   return dataObj.toLocaleDateString('pt-BR')
 }
 
+import ImageG from "@/components/ImageG";
+
+
 type Penalidade = {
   usuarioId: number
   usuarioNome: string
@@ -130,22 +133,22 @@ export default function PenalidadesPage() {
 
   return (
     <main>
-      <div className="p-16">
-        <h1 className="text-6xl font-bold mb-8">Penalidades</h1>
+      <div className="p-6 md:p-16">
+        <h1 className="text-4xl md:text-6xl font-bold mb-8">Penalidades</h1>
 
-        <div className="relative flex flex-row">
+        <div className="flex flex-col md:flex-row gap-4 mb-4 ">
           <Input
             placeholder="Buscar por nome de usuário"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-md"
+            className="w-full placeholder:text-sm px-1 md:max-w-md border-gray-400"
           />
-          <div className="absolute right-0">
+          <div className="w-full md:w-auto md:ml-auto">
             <Botao texto="Adicionar Penalidade" onClick={() => router.push('/penalidades/adicionar')} />
           </div>
         </div>
 
-        <div className="p-4 mt-12">
+        <div className=" mt-12">
           {search.trim() === '' ? (
             <>
               <h2 className="text-2xl font-bold mb-4">Penalidades Pendentes</h2>
@@ -214,6 +217,16 @@ export default function PenalidadesPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <div className="mt-10 flex justify-center md:hidden">
+       <ImageG
+          src="/ATENA-CURSINHO.png"
+          alt="Logo Atena"
+          width={80}
+          height={35}
+          priority
+         />
+     </div>
     </main>
   )
 }

@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue
 } from '@/components/ui/select'
+import ImageG from "@/components/ImageG";
 
 interface Emprestimo {
   usuario_id: number
@@ -209,16 +210,16 @@ export default function EmprestimosPage() {
   ]
 
   return (
-    <main className="p-16">
-      <h1 className="text-6xl font-bold mb-8">Empréstimos</h1>
+    <main className="p-6 md:p-16">
+      <h1 className="text-3xl md:text-6xl font-bold mb-8">Empréstimos</h1>
 
-      <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center">
-        <Input placeholder="Buscar por usuário ou livro" value={busca} onChange={e => setBusca(e.target.value)} className="max-w-md" />
+      <div className="relative flex flex-col md:flex-row gap-4 mb-4">
+        <Input placeholder="Buscar por usuário ou livro" value={busca} onChange={e => setBusca(e.target.value)} className="w-full placeholder:text-sm px-2 md:max-w-md border-gray-400" />
         <Select
           onValueChange={(value) => setFiltroData(value as 'inicio' | 'devolucao')}
           value={filtroData}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px] border-gray-400">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -226,12 +227,12 @@ export default function EmprestimosPage() {
             <SelectItem value="devolucao">Data de Devolução</SelectItem>
           </SelectContent>
         </Select>
-        <div className="md:ml-auto">
+        <div className="w-full md:w-auto ml-auto">
           <Botao texto="Adicionar Empréstimo" onClick={() => router.push('/emprestimos/adicionar')} />
         </div>
       </div>
 
-      <div className="p-4 mt-12">
+      <div className="mt-12">
         <DataTable columns={columns} data={filtered} />
       </div>
 
@@ -256,6 +257,15 @@ export default function EmprestimosPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <div className="mt-10 flex justify-center md:hidden">
+        <ImageG
+            src="/ATENA-CURSINHO.png"
+            alt="Logo Atena"
+            width={80}
+            height={35}
+            priority
+        />
+      </div>
     </main>
   )
 }

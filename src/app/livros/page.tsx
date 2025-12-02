@@ -29,6 +29,7 @@ import {
   SelectValue
 } from '@/components/ui/select'
 import { toast } from 'sonner'
+import ImageG from "@/components/ImageG";
 
 type Autor = { id: number; nome: string }
 type Livro = {
@@ -187,21 +188,21 @@ export default function LivrosPage() {
   ]
 
   return (
-    <main className="p-16">
-      <h1 className="text-6xl font-bold mb-8">Livros</h1>
+    <main className="p-5 md:p-16 ">
+      <h1 className="text-4xl md:text-6xl font-bold mb-8">Livros</h1>
 
-      <div className="relative flex flex-row flex-wrap items-center gap-4 mb-4">
+      <div className="relative flex flex-col md:flex-row flex-wrap items-start md:items-center gap-4 mb-4 " >
         <Input
           placeholder="Buscar..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="max-w-md"
+          className="w-full md:max-w-md border-gray-400"
         />
         <Select
           onValueChange={(value) => setCampoBusca(value as CampoBusca)}
           value={campoBusca}
         >
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full md:w-[180px] border-gray-400">
             <SelectValue placeholder="Campo de busca" />
           </SelectTrigger>
           <SelectContent>
@@ -211,7 +212,7 @@ export default function LivrosPage() {
             <SelectItem value="autores">Autor(es)</SelectItem>
           </SelectContent>
         </Select>
-        <div className="ml-auto flex gap-2">
+        <div className="w-full md:w-auto xl:ml-auto flex flex-col md:flex-row gap-2 ">
           <Botao
             texto="Adicionar livro"
             onClick={() => router.push('/livros/adicionar')}
@@ -256,6 +257,7 @@ export default function LivrosPage() {
       </div>
 
       <DataTable columns={columns} data={livrosFiltrados} />
+      
 
       <Dialog open={!!isbnParaExcluir} onOpenChange={() => setIsbnParaExcluir(null)}>
         <DialogContent>
@@ -275,6 +277,15 @@ export default function LivrosPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <div className="mt-10 flex justify-center md:hidden">
+        <ImageG
+            src="/ATENA-CURSINHO.png"
+            alt="Logo Atena"
+            width={80}
+            height={35}
+            priority
+        />
+      </div>
     </main>
   )
 }

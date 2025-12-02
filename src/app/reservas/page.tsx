@@ -13,6 +13,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import ImageG from "@/components/ImageG";
 
 interface Reserva {
   usuario_id: number
@@ -89,17 +90,17 @@ export default function ReservaPage() {
   ]
 
   return (
-    <main className="p-16">
-      <h1 className="text-6xl font-bold mb-8">Reservas</h1>
+    <main className="p-6 md:p-16">
+      <h1 className="text-4xl md:text-6xl font-bold mb-8">Reservas</h1>
 
-      <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center">
+      <div className="relative flex flex-col md:flex-row gap-4 items-start md:items-center ">
         <Input
           placeholder="Buscar por título do livro"
           value={buscaLivro}
           onChange={e => setBuscaLivro(e.target.value)}
-          className="max-w-md"
+          className="w-full placeholder:text-sm px-2 md:max-w-md border-gray-400"
         />
-        <div className="md:ml-auto">
+        <div className="w-full md:w-auto md:ml-auto">
           <Botao texto="Adicionar Reserva" onClick={() => router.push('/reservas/adicionar')} />
         </div>
       </div>
@@ -107,6 +108,16 @@ export default function ReservaPage() {
       <div className="p-4 mt-12">
         <DataTable columns={columns} data={reservasFiltradas} />
       </div>
+
+      <div className="mt-10 flex justify-center md:hidden">
+        <ImageG
+          src="/ATENA-CURSINHO.png"
+          alt="Logo Atena"
+          width={80}
+          height={35}
+          priority
+        />
+     </div>
     </main>
   )
 }

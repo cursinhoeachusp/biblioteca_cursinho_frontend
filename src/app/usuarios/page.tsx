@@ -10,6 +10,7 @@ import { BatchAddButton } from '../components/batch-add-button'
 import { DeleteModal } from '../components/DeleteModal'
 import { EditModal } from '../components/EditModal'
 import { Botao } from '../components/botao'
+import ImageG from "@/components/ImageG";
 
 import {
   Select,
@@ -209,21 +210,21 @@ export default function UsuariosPage() {
         }
       />
 
-      <div className='p-16'>
-        <h1 className="text-6xl font-bold mb-8">Usuários</h1>
+      <div className='p-6 md:p-16'>
+        <h1 className="text-4xl md:text-6xl font-bold mb-8">Usuários</h1>
 
-        <div className="relative flex flex-row flex-wrap items-center gap-4 mb-4">
+        <div className="md:relative flex flex-row flex-wrap items-center gap-4 mb-4 ">
           <Input
             placeholder="Buscar..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="max-w-md"
+            className="w-full md:max-w-md border-gray-400"
           />
           <Select
             onValueChange={(value) => setCampoBusca(value as CampoBusca)}
             value={campoBusca}
           >
-            <SelectTrigger className="w-[100px]">
+            <SelectTrigger className="w-[100px] border-gray-400">
               <SelectValue placeholder="Campo de busca" />
             </SelectTrigger>
             <SelectContent>
@@ -233,7 +234,7 @@ export default function UsuariosPage() {
             </SelectContent>
           </Select>
 
-          <div className="ml-auto flex gap-2">
+          <div className="w-full md:w-auto xl:ml-auto flex flex-col md:flex-row gap-2">
             <Botao
               texto="Adicionar usuário"
               onClick={() => router.push('/usuarios/novo')}
@@ -242,7 +243,7 @@ export default function UsuariosPage() {
           </div>
         </div>
 
-        <div className="p-4 mt-12">
+        <div className="mt-12">
           {search.trim() === "" ? (
             <>
               <h2 className="text-2xl font-bold mb-4">Usuários com empréstimos atrasados</h2>
@@ -258,6 +259,16 @@ export default function UsuariosPage() {
             </>
           )}
         </div>
+      </div>
+
+      <div className="mt-10 flex justify-center md:hidden">
+       <ImageG
+          src="/ATENA-CURSINHO.png"
+          alt="Logo Atena"
+          width={80}
+          height={35}
+          priority
+        />
       </div>
     </main>
   )

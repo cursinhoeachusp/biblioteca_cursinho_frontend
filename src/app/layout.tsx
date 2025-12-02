@@ -23,12 +23,12 @@ export default function RootLayout({
     <html lang="pt-BR">
       <body className={`${poppins.className} antialiased`}>
         {/* Sidebar fixa */}
-        <div className="fixed top-0 left-0 h-screen w-64 z-50">
+        <div className="w-16 md:w-56 fixed top-0 left-0 h-screen w-64 z-50 transition-all duration-300">
           <Sidebar />
         </div>
 
         {/* Conteúdo com padding lateral para evitar sobreposição */}
-        <main className="pl-64 min-h-screen bg-gray-50 p-6">
+        <main className="min-h-screen bg-orange-50 pt-6 pb-6 pr-6 pl-20 md:pl-56 transition-all duration-300">
           {children}
         </main>
       <Toaster richColors />
