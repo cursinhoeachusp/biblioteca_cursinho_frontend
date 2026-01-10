@@ -1,8 +1,8 @@
-import { Sidebar } from './components/sidebar'
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Toaster } from '@/components/ui/sonner';
+import { AppLayout } from './components/app-layout'; // Importe o novo componente
 
 const poppins = Poppins({
   subsets: ["latin"],
@@ -11,7 +11,7 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "Biblioteca Popular",
-  description: "Sistema de Biblioteca do Curcinho Popular",
+  description: "Sistema de Biblioteca do Cursinho Popular",
 };
 
 export default function RootLayout({
@@ -22,16 +22,11 @@ export default function RootLayout({
   return (
     <html lang="pt-BR">
       <body className={`${poppins.className} antialiased`}>
-        {/* Sidebar fixa */}
-        <div className="w-14 md:w-56 fixed top-0 left-0 h-screen z-50 transition-all duration-300">
-          <Sidebar />
-        </div>
-
-        {/* Conteúdo com padding lateral para evitar sobreposição */}
-        <main className="min-h-screen bg-orange-50 pt-6 pb-6 pr-6 pl-20 md:pl-56 transition-all duration-300">
+        {/* O AppLayout cuida da segurança e do visual */}
+        <AppLayout>
           {children}
-        </main>
-      <Toaster richColors />
+        </AppLayout>
+        <Toaster richColors />
       </body>
     </html>
   );
