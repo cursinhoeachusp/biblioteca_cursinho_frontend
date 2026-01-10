@@ -42,7 +42,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="rounded-md border">
+      <div className="rounded-md border border-gray-400">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map(headerGroup => (
@@ -81,8 +81,8 @@ export function DataTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4 text-sm">
-        <div>
+      <div className="flex flex-col items-center space-y-3 py-4 text-sm ">
+        <div className="text-muted-foreground">
           {(() => {
             const pageIndex = table.getState().pagination.pageIndex
             const pageSize = table.getState().pagination.pageSize
@@ -94,11 +94,13 @@ export function DataTable<TData, TValue>({
             return `${start}–${end} de ${totalRows}`
           })()}
         </div>
+        <div className="flex items-center space-x-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
+          className='border-gray-400'
         >
           Anterior
         </Button>
@@ -110,9 +112,11 @@ export function DataTable<TData, TValue>({
           size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
+          className='border-gray-400'
         >
           Próxima
         </Button>
+        </div>
       </div>
     </div>
   )

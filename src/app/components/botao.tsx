@@ -12,7 +12,7 @@ interface BotaoProps {
 export function Botao({ texto, onClick, type = "button", disabled = false }: BotaoProps) {
   return (
     <Button
-      className="mb-4 text-md bg-[#0b2245] hover:bg-[#153a6c] hover:font-semibold"
+      className=" px-6 py-6 text-md bg-[#18407c] hover:bg-[#20509a] hover:font-semibold"
       onClick={onClick}
       type={type}
       disabled={disabled}
