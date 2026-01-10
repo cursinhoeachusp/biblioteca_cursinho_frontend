@@ -22,7 +22,7 @@ export function Sidebar() {
           width={350}
           height={73}
           priority
-          className="hidden md:block"
+          className="md:block"
         />
       </div>
 
@@ -33,11 +33,11 @@ export function Sidebar() {
             href={href}
             className={cn(
               'flex items-center gap-3 px-3 py-2 rounded-md hover:bg-[#20509a] hover:font-semibold transition-colors',
-              'justify-center md:justify-start'
+              ' md:justify-start'
             )}
           >
             <Icon className="w-5 h-5 flex-shrink-0" />
-            <span className="text-md hidden md:inline">{label}</span>
+            <span className="text-md md:inline">{label}</span>
           </Link>
         ))}
       </nav>
