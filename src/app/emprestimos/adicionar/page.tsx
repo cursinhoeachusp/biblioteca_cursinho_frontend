@@ -1,90 +1,321 @@
 'use client'
 
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { format, addDays } from 'date-fns'
+import { toast } from 'sonner'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { toast } from 'sonner'
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { ChevronsUpDown, Check } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-const schema = z.object({
-  usuario_id: z.string().min(1, 'Usuário obrigatório'),
-  exemplar_codigo: z.string().min(1, 'Exemplar obrigatório'),
-  data_inicio: z.string().min(1, 'Data de início obrigatória'),
-  data_fim_previsto: z.string().min(1, 'Data de fim prevista obrigatória')
-})
+// Tipos
+type Usuario = { id: number; nome: string; cpf: string }
+type Livro = { isbn: string; titulo: string }
 
-export default function AdicionarEmprestimoPage() {
+function AdicionarEmprestimoForm() {
   const router = useRouter()
-  const hoje = format(new Date(), 'yyyy-MM-dd')
-  const fimPrevisto = format(addDays(new Date(), 10), 'yyyy-MM-dd')
+  const searchParams = useSearchParams()
+  
+  // Pega dados da URL (se veio pelo botão "Realizar Empréstimo" na lista)
+  const urlIsbn = searchParams.get('isbn')
+  const urlTitulo = searchParams.get('titulo')
 
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors }
-  } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: {
-      usuario_id: '',
-      exemplar_codigo: '',
-      data_inicio: hoje,
-      data_fim_previsto: fimPrevisto
+  // Estados do Formulário
+  const [dataInicio] = useState(format(new Date(), 'yyyy-MM-dd'))
+  const [dataFimPrevisto, setDataFimPrevisto] = useState(format(addDays(new Date(), 10), 'yyyy-MM-dd')) // Padrão 10 dias
+  const [exemplarCodigo, setExemplarCodigo] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // Estados de Busca (Livro)
+  const [livrosDisponiveis, setLivrosDisponiveis] = useState<Livro[]>([])
+  const [selectedLivroIsbn, setSelectedLivroIsbn] = useState<string | null>(urlIsbn)
+  const [selectedLivroTitulo, setSelectedLivroTitulo] = useState<string | null>(urlTitulo)
+  const [isLivroPopoverOpen, setIsLivroPopoverOpen] = useState(false)
+
+  // Estados de Busca (Exemplares do Livro Selecionado)
+  const [exemplaresDoLivro, setExemplaresDoLivro] = useState<string[]>([])
+
+  // Estados de Busca (Usuário)
+  const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false)
+  const [selectedUser, setSelectedUser] = useState<Usuario | null>(null)
+  const [userSearchQuery, setUserSearchQuery] = useState('')
+  const [userSearchResults, setUserSearchResults] = useState<Usuario[]>([])
+
+  // 1. Carregar lista geral de livros para o combo de pesquisa
+  useEffect(() => {
+    async function fetchLivros() {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+        const res = await fetch(`${baseUrl}/livros`)
+        const data = await res.json()
+        setLivrosDisponiveis(data)
+      } catch (error) {
+        console.error('Erro ao buscar livros:', error)
+      }
     }
-  })
+    fetchLivros()
+  }, [])
 
-  const onSubmit = async (data: any) => {
+  // 2. Buscar Exemplares DISPONÍVEIS quando seleciona um livro
+  useEffect(() => {
+    async function fetchExemplares() {
+      if (!selectedLivroIsbn) {
+        setExemplaresDoLivro([])
+        return
+      }
+
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+        // Chama a nova rota que criamos no controller
+        const res = await fetch(`${baseUrl}/livros/${selectedLivroIsbn}/exemplares-disponiveis`)
+        
+        if (!res.ok) throw new Error('Erro ao buscar exemplares')
+        
+        const data = await res.json() // Espera ["COD-1", "COD-2"]
+        setExemplaresDoLivro(data)
+      } catch (error) {
+        toast.error('Erro ao buscar exemplares disponíveis.')
+        console.error(error)
+      }
+    }
+    fetchExemplares()
+  }, [selectedLivroIsbn])
+
+  // 3. Busca de Usuários (Com Debounce igual Reservas)
+  useEffect(() => {
+    if (userSearchQuery.trim() === '') {
+      setUserSearchResults([])
+      return
+    }
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+        const res = await fetch(`${baseUrl}/usuarios/search?q=${userSearchQuery}`)
+        const data = await res.json()
+        if (Array.isArray(data)) setUserSearchResults(data)
+        else setUserSearchResults([])
+      } catch (error) {
+        console.error(error)
+      }
+    }, 300)
+    return () => clearTimeout(delayDebounceFn)
+  }, [userSearchQuery])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+
+    if (!selectedUser || !exemplarCodigo || !dataFimPrevisto) {
+      toast.error('Preencha todos os campos obrigatórios')
+      return
+    }
+
+    setIsLoading(true)
     try {
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL
       const res = await fetch(`${baseUrl}/emprestimos`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify({
+          usuario_id: selectedUser.id,
+          exemplar_codigo: exemplarCodigo,
+          data_inicio: dataInicio,
+          data_fim_previsto: new Date(dataFimPrevisto).toISOString()
+        })
       })
 
       if (!res.ok) {
         const msg = await res.text()
-        toast.error('Erro ao adicionar empréstimo')
-        setError('usuario_id', { type: 'manual', message: 'Verifique o ID do usuário.' })
-        setError('exemplar_codigo', { type: 'manual', message: 'Verifique o código do exemplar.' })
-        return
+        throw new Error(msg || 'Erro ao realizar empréstimo')
       }
 
-      toast.success('Empréstimo adicionado com sucesso!')
+      toast.success('Empréstimo realizado com sucesso!')
       router.push('/emprestimos')
     } catch (err: any) {
-      toast.error('Erro ao adicionar empréstimo', { description: err.message })
+      toast.error(err.message)
+    } finally {
+      setIsLoading(false)
     }
   }
 
   return (
-    <main className="max-w-2xl mx-auto p-8 space-y-6">
-      <h1 className="text-3xl font-bold">Adicionar Empréstimo</h1>
+    <main className="max-w-3xl mx-auto p-8 md:p-16 space-y-8">
+      <div>
+        <h1 className="text-3xl font-bold">Novo Empréstimo</h1>
+        <p className="text-muted-foreground mt-2">Registre a saída de um livro.</p>
+      </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        <Input placeholder="ID do usuário" {...register('usuario_id')} />
-        {errors.usuario_id && <p className="text-sm text-red-500">{errors.usuario_id.message}</p>}
-
-        <Input placeholder="Código do exemplar" {...register('exemplar_codigo')} />
-        {errors.exemplar_codigo && <p className="text-sm text-red-500">{errors.exemplar_codigo.message}</p>}
-
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Data de início</p>
-          <Input type="date" disabled value={hoje} {...register('data_inicio')} className="opacity-50" />
+      <form onSubmit={handleSubmit} className="space-y-6">
+        
+        {/* SELEÇÃO DE USUÁRIO */}
+        <div className="space-y-2">
+            <label className="font-semibold text-sm">Usuário (Aluno)</label>
+            <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={isUserPopoverOpen}
+                        className="w-full justify-between font-normal"
+                    >
+                        {selectedUser
+                            ? `${selectedUser.nome} (CPF: ${selectedUser.cpf})`
+                            : "Pesquisar usuário..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command>
+                        <CommandInput 
+                            placeholder="Nome ou CPF..." 
+                            onValueChange={setUserSearchQuery}
+                        />
+                        <CommandList>
+                            <CommandEmpty>Nenhum usuário encontrado.</CommandEmpty>
+                            <CommandGroup>
+                                {userSearchResults.map((user) => (
+                                    <CommandItem
+                                        key={user.id}
+                                        value={`${user.nome} ${user.cpf}`}
+                                        onSelect={() => {
+                                            setSelectedUser(user)
+                                            setIsUserPopoverOpen(false)
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                selectedUser?.id === user.id ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        {user.nome}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
         </div>
 
-        <div>
-          <p className="text-xs text-muted-foreground mb-1">Data de fim prevista</p>
-          <Input type="date" disabled value={fimPrevisto} {...register('data_fim_previsto')} className="opacity-50" />
+        {/* SELEÇÃO DE LIVRO */}
+        <div className="space-y-2">
+            <label className="font-semibold text-sm">Livro</label>
+            <Popover open={isLivroPopoverOpen} onOpenChange={setIsLivroPopoverOpen}>
+                <PopoverTrigger asChild>
+                    <Button
+                        variant="outline"
+                        role="combobox"
+                        aria-expanded={isLivroPopoverOpen}
+                        className="w-full justify-between font-normal"
+                    >
+                         {selectedLivroIsbn
+                            ? (selectedLivroTitulo || livrosDisponiveis.find(l => l.isbn === selectedLivroIsbn)?.titulo || selectedLivroIsbn)
+                            : "Selecione o livro..."}
+                        <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                    <Command>
+                        <CommandInput placeholder="Buscar título do livro..." />
+                        <CommandList>
+                            <CommandEmpty>Nenhum livro encontrado.</CommandEmpty>
+                            <CommandGroup>
+                                {livrosDisponiveis.map((livro) => (
+                                    <CommandItem
+                                        key={livro.isbn}
+                                        value={livro.titulo}
+                                        onSelect={() => {
+                                            setSelectedLivroIsbn(livro.isbn)
+                                            setSelectedLivroTitulo(livro.titulo)
+                                            setExemplarCodigo('') // Reseta exemplar ao trocar livro
+                                            setIsLivroPopoverOpen(false)
+                                        }}
+                                    >
+                                        <Check
+                                            className={cn(
+                                                "mr-2 h-4 w-4",
+                                                selectedLivroIsbn === livro.isbn ? "opacity-100" : "opacity-0"
+                                            )}
+                                        />
+                                        {livro.titulo}
+                                    </CommandItem>
+                                ))}
+                            </CommandGroup>
+                        </CommandList>
+                    </Command>
+                </PopoverContent>
+            </Popover>
         </div>
 
-        <div className="pt-4">
-          <Button type="submit">Salvar</Button>
+        {/* SELEÇÃO DE EXEMPLAR (Só libera se tiver livro selecionado) */}
+        <div className="space-y-2">
+            <label className="font-semibold text-sm">Exemplar Disponível</label>
+            <Select 
+                onValueChange={setExemplarCodigo} 
+                value={exemplarCodigo} 
+                disabled={!selectedLivroIsbn}
+            >
+                <SelectTrigger>
+                    <SelectValue placeholder={!selectedLivroIsbn ? "Escolha um livro primeiro" : "Selecione a etiqueta/código"} />
+                </SelectTrigger>
+                <SelectContent>
+                    {exemplaresDoLivro.length > 0 ? (
+                        exemplaresDoLivro.map((cod) => (
+                            <SelectItem key={cod} value={cod}>
+                                {cod}
+                            </SelectItem>
+                        ))
+                    ) : (
+                        <SelectItem value="-" disabled>
+                           {selectedLivroIsbn ? "Sem exemplares disponíveis" : "..."}
+                        </SelectItem>
+                    )}
+                </SelectContent>
+            </Select>
         </div>
+
+        {/* DATAS */}
+        <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+                <label className="font-semibold text-sm text-muted-foreground">Data Início</label>
+                <Input type="date" value={dataInicio} disabled className="bg-slate-50" />
+            </div>
+            <div className="space-y-2">
+                <label className="font-semibold text-sm">Previsão de Entrega</label>
+                <Input 
+                    type="date" 
+                    value={dataFimPrevisto} 
+                    onChange={(e) => setDataFimPrevisto(e.target.value)} 
+                />
+            </div>
+        </div>
+
+        <div className="pt-4 flex justify-end gap-3">
+          <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Salvando...' : 'Confirmar Empréstimo'}
+          </Button>
+        </div>
+
       </form>
     </main>
   )
+}
+
+export default function Page() {
+    return (
+        <Suspense fallback={<div>Carregando...</div>}>
+            <AdicionarEmprestimoForm />
+        </Suspense>
+    )
 }

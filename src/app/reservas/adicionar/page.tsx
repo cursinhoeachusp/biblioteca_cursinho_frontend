@@ -18,34 +18,66 @@ import { ChevronsUpDown, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type Usuario = { id: number; nome: string; cpf: string }
+type Livro = { isbn: string; titulo: string } // Tipo simples para a busca
 type Exemplar = { codigo: string }
 
 function ReservaForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
 
-    // --- LÓGICA DO FORMULÁRIO ---
+    // Pegamos o ISBN da URL, se existir
+    const urlIsbn = searchParams.get('isbn')
+    const urlTitulo = searchParams.get('titulo')
+
+    // --- ESTADOS ---
     const [exemplarCodigo, setExemplarCodigo] = useState<string>('')
     const [dataEfetuacao, setDataEfetuacao] = useState(new Date().toISOString().split('T')[0])
     const [isLoading, setIsLoading] = useState(false)
     const [exemplares, setExemplares] = useState<Exemplar[]>([])
 
-    // --- NOVOS ESTADOS PARA A BUSCA DE USUÁRIO ---
+    // Busca de Usuário
     const [isUserPopoverOpen, setIsUserPopoverOpen] = useState(false)
     const [selectedUser, setSelectedUser] = useState<Usuario | null>(null)
     const [userSearchQuery, setUserSearchQuery] = useState('')
     const [userSearchResults, setUserSearchResults] = useState<Usuario[]>([])
 
-    const isbn = searchParams.get('isbn')
-    const titulo = searchParams.get('titulo')
+    // NOVO: Busca de Livro (Para quando não vier da URL)
+    const [isLivroPopoverOpen, setIsLivroPopoverOpen] = useState(false)
+    const [selectedLivroIsbn, setSelectedLivroIsbn] = useState<string | null>(urlIsbn)
+    const [selectedLivroTitulo, setSelectedLivroTitulo] = useState<string | null>(urlTitulo)
+    const [livrosDisponiveis, setLivrosDisponiveis] = useState<Livro[]>([]) // Para listar no combo
 
-    // --- EFEITO PARA BUSCAR EXEMPLARES (Inalterado) ---
+    // 1. Carregar lista de livros (Simples: Pega todos. Se tiver muitos, ideal é fazer busca via API igual usuário)
     useEffect(() => {
-        async function fetchExemplares() {
-            if (!isbn) return
+        async function fetchLivros() {
             try {
                 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-                const res = await fetch(`${baseUrl}/livros/${isbn}/exemplares-indisponiveis`)
+                const res = await fetch(`${baseUrl}/livros`)
+                const data = await res.json()
+                setLivrosDisponiveis(data)
+            } catch (error) {
+                console.error('Erro ao buscar livros:', error)
+            }
+        }
+        // Só busca se não tiver vindo pré-selecionado (ou busca sempre para permitir trocar)
+        fetchLivros()
+    }, [])
+
+    // 2. Buscar Exemplares Indisponíveis (Agora depende do estado selectedLivroIsbn, não só da URL)
+    useEffect(() => {
+        async function fetchExemplares() {
+            // Se não tiver livro selecionado, zera a lista e para
+            if (!selectedLivroIsbn) {
+                setExemplares([])
+                return
+            }
+
+            try {
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+                const res = await fetch(`${baseUrl}/livros/${selectedLivroIsbn}/exemplares-indisponiveis`)
+                
+                if (!res.ok) throw new Error('Erro ao buscar exemplares')
+                
                 const data = await res.json()
                 setExemplares(data)
             } catch (error) {
@@ -54,46 +86,30 @@ function ReservaForm() {
             }
         }
         fetchExemplares()
-    }, [isbn])
+    }, [selectedLivroIsbn]) // Roda toda vez que o livro selecionado mudar
 
-    // --- NOVO EFEITO PARA BUSCAR USUÁRIOS COM DEBOUNCE ---
+    // Busca de Usuários (Mantida igual)
     useEffect(() => {
-        // Não busca se o campo estiver vazio
         if (userSearchQuery.trim() === '') {
             setUserSearchResults([])
             return
         }
-
-        // Debounce: espera 300ms após o usuário parar de digitar para fazer a busca
         const delayDebounceFn = setTimeout(async () => {
             try {
                 const baseUrl = process.env.NEXT_PUBLIC_API_URL;
                 const res = await fetch(`${baseUrl}/usuarios/search?q=${userSearchQuery}`)
                 const data = await res.json()
-                if (Array.isArray(data)) {
-                    // Se a resposta FOR um array, nós atualizamos o estado com os resultados.
-                    setUserSearchResults(data);
-                } else {
-                    // Se NÃO for um array, nós limpamos os resultados para não quebrar a tela.
-                    setUserSearchResults([]);
-                    // E mostramos o erro no console para depuração.
-                    console.error("A resposta da API de busca não é um array:", data);
-                    toast.error("Ocorreu um erro ao buscar usuários.");
-                }
+                if (Array.isArray(data)) setUserSearchResults(data);
+                else setUserSearchResults([]);
             } catch (error) {
-                toast.error('Erro ao buscar usuários.')
                 console.error(error)
             }
         }, 300)
-
-        // Limpa o timeout se o usuário continuar digitando
         return () => clearTimeout(delayDebounceFn)
     }, [userSearchQuery])
 
-
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        // A validação agora checa se um usuário foi selecionado
         if (!selectedUser || !exemplarCodigo || !dataEfetuacao) {
             toast.error('Todos os campos são obrigatórios.')
             return
@@ -106,7 +122,7 @@ function ReservaForm() {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    usuario_id: selectedUser.id, // Usa o ID do usuário selecionado
+                    usuario_id: selectedUser.id,
                     exemplar_codigo: exemplarCodigo,
                     data_efetuacao: new Date(dataEfetuacao).toISOString(),
                 }),
@@ -129,13 +145,86 @@ function ReservaForm() {
     return (
         <main className="p-8 sm:p-16 max-w-4xl mx-auto">
             <h1 className="text-4xl font-bold mb-2">Nova Reserva</h1>
-            {titulo && <h2 className="text-xl text-muted-foreground mb-8">Para o livro: {titulo}</h2>}
+            <p className="text-muted-foreground mb-8">Preencha os dados para registrar a reserva.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
 
-                {/* NOVO SELETOR DE USUÁRIO (COMBOBOX) */}
+                {/* 1. SELETOR DE LIVRO (NOVO!) */}
                 <div className="space-y-2">
-                    <label htmlFor="usuario" className="font-semibold">Usuário</label>
+                    <label className="font-semibold">Livro</label>
+                    <Popover open={isLivroPopoverOpen} onOpenChange={setIsLivroPopoverOpen}>
+                        <PopoverTrigger asChild>
+                            <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={isLivroPopoverOpen}
+                                className="w-full justify-between font-normal"
+                            >
+                                {selectedLivroIsbn
+                                    ? (selectedLivroTitulo || livrosDisponiveis.find(l => l.isbn === selectedLivroIsbn)?.titulo || selectedLivroIsbn)
+                                    : "Selecione um livro..."}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                            <Command>
+                                <CommandInput placeholder="Buscar livro..." />
+                                <CommandList>
+                                    <CommandEmpty>Nenhum livro encontrado.</CommandEmpty>
+                                    <CommandGroup>
+                                        {livrosDisponiveis.map((livro) => (
+                                            <CommandItem
+                                                key={livro.isbn}
+                                                value={livro.titulo}
+                                                onSelect={() => {
+                                                    setSelectedLivroIsbn(livro.isbn)
+                                                    setSelectedLivroTitulo(livro.titulo)
+                                                    setExemplarCodigo('') // Reseta o exemplar ao trocar de livro
+                                                    setIsLivroPopoverOpen(false)
+                                                }}
+                                            >
+                                                <Check
+                                                    className={cn(
+                                                        "mr-2 h-4 w-4",
+                                                        selectedLivroIsbn === livro.isbn ? "opacity-100" : "opacity-0"
+                                                    )}
+                                                />
+                                                {livro.titulo}
+                                            </CommandItem>
+                                        ))}
+                                    </CommandGroup>
+                                </CommandList>
+                            </Command>
+                        </PopoverContent>
+                    </Popover>
+                </div>
+
+                {/* 2. SELETOR DE EXEMPLAR (Agora reage ao livro selecionado acima) */}
+                <div className="space-y-2">
+                    <label htmlFor="exemplar" className="font-semibold">Exemplar Indisponível</label>
+                    <Select onValueChange={setExemplarCodigo} value={exemplarCodigo} disabled={!selectedLivroIsbn}>
+                        <SelectTrigger id="exemplar">
+                            <SelectValue placeholder={!selectedLivroIsbn ? "Selecione um livro primeiro" : "Selecione o código do exemplar"} />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {exemplares.length > 0 ? (
+                                exemplares.map((ex) => (
+                                    <SelectItem key={ex.codigo} value={ex.codigo}>
+                                        {ex.codigo}
+                                    </SelectItem>
+                                ))
+                            ) : (
+                                <SelectItem value="-" disabled>
+                                    {selectedLivroIsbn ? "Nenhum exemplar indisponível neste livro" : "Aguardando seleção do livro..."}
+                                </SelectItem>
+                            )}
+                        </SelectContent>
+                    </Select>
+                </div>
+
+                {/* 3. SELETOR DE USUÁRIO (Igual ao anterior) */}
+                <div className="space-y-2">
+                    <label className="font-semibold">Usuário</label>
                     <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
                         <PopoverTrigger asChild>
                             <Button
@@ -174,7 +263,7 @@ function ReservaForm() {
                                                         selectedUser?.id === user.id ? "opacity-100" : "opacity-0"
                                                     )}
                                                 />
-                                                {user.nome} <span className='text-xs text-muted-foreground ml-2'></span>
+                                                {user.nome}
                                             </CommandItem>
                                         ))}
                                     </CommandGroup>
@@ -184,30 +273,7 @@ function ReservaForm() {
                     </Popover>
                 </div>
 
-                {/* Seletor de Exemplar (Inalterado) */}
-                <div className="space-y-2">
-                    <label htmlFor="exemplar" className="font-semibold">Exemplar Indisponível</label>
-                    <Select onValueChange={setExemplarCodigo} value={exemplarCodigo}>
-                        <SelectTrigger id="exemplar">
-                            <SelectValue placeholder="Selecione o código do exemplar" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            {exemplares.length > 0 ? (
-                                exemplares.map((ex) => (
-                                    <SelectItem key={ex.codigo} value={ex.codigo}>
-                                        {ex.codigo}
-                                    </SelectItem>
-                                ))
-                            ) : (
-                                <SelectItem value="-" disabled>
-                                    Nenhum exemplar indisponível para reserva
-                                </SelectItem>
-                            )}
-                        </SelectContent>
-                    </Select>
-                </div>
-
-                {/* Seletor de Data (Inalterado) */}
+                {/* 4. DATA */}
                 <div className="space-y-2">
                     <label htmlFor="data" className="font-semibold">Data de Efetuação</label>
                     <Input
@@ -222,7 +288,7 @@ function ReservaForm() {
                     <Button type="button" variant="outline" onClick={() => router.back()}>
                         Cancelar
                     </Button>
-                    <Button type="submit" disabled={isLoading || exemplares.length === 0}>
+                    <Button type="submit" disabled={isLoading || !selectedUser || !exemplarCodigo}>
                         {isLoading ? 'Salvando...' : 'Salvar Reserva'}
                     </Button>
                 </div>

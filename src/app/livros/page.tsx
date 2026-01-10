@@ -155,10 +155,12 @@ export default function LivrosPage() {
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              disabled={
-                Number(row.original.exemplares_disponiveis) === 0
+              disabled={Number(row.original.exemplares_disponiveis) === 0}
+              onClick={() =>
+                router.push(
+                  `/emprestimos/adicionar?isbn=${row.original.isbn}&titulo=${encodeURIComponent(row.original.titulo)}`
+                )
               }
-              onClick={() => window.location.href = '/emprestimos/adicionar'}
             >
               Realizar empréstimo
             </DropdownMenuItem>
