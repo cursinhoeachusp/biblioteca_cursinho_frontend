@@ -43,7 +43,8 @@ export function MultiSelectAutores({
 
     try {
       setCreating(true)
-      const res = await fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/autores", {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/autores`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ nome: input }),

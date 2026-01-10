@@ -29,7 +29,8 @@ export default function ReservaPage() {
 
   async function fetchReservas() {
     try {
-      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/reservas')
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/reservas`)
       const data = await res.json()
       setReservas(data)
     } catch {

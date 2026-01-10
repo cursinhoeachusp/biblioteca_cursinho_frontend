@@ -50,7 +50,8 @@ export default function AdicionarPenalidadePage() {
   const dataEmprestimo = watch('emprestimo_data_inicio')
 
   useEffect(() => {
-    fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/penalidade/tipos')
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    fetch(`${baseUrl}/penalidade/tipos`)
       .then(res => res.json())
       .then(data => {
         setTipos(data)
@@ -58,7 +59,7 @@ export default function AdicionarPenalidadePage() {
         if (reposicao) setTipoReposicaoId(reposicao.id)
       })
 
-    fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/penalidade/causas')
+    fetch(`${baseUrl}/penalidade/causas`)
       .then(res => res.json())
       .then(setCausas)
 
@@ -99,7 +100,8 @@ export default function AdicionarPenalidadePage() {
         causa_id: Number(data.causa_id)
       }
 
-      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/penalidade', {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/penalidade`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

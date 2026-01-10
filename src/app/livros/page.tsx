@@ -57,7 +57,8 @@ export default function LivrosPage() {
   useEffect(() => {
     async function fetchLivros() {
       try {
-        const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros')
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${baseUrl}/livros`)
         const data = await res.json()
         setLivros(data)
       } catch (error) {
@@ -82,10 +83,10 @@ export default function LivrosPage() {
   async function excluirLivro(isbn: string) {
     try {
       setLoadingExcluir(true)
-      const res = await fetch(
-        `https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/isbn/${isbn}`,
-        { method: 'DELETE' }
-      )
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/livros/isbn/${isbn}`, {
+        method: 'DELETE'
+      })
       if (!res.ok) throw new Error()
       toast.success('Livro excluído com sucesso!')
       setLivros((prev) => prev.filter((l) => l.isbn !== isbn))
@@ -109,8 +110,9 @@ export default function LivrosPage() {
 
     try {
       setImporting(true)
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(
-        'https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/import',
+        `${baseUrl}/livros/import`,
         {
           method: 'POST',
           body: formData

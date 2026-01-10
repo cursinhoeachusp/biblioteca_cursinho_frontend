@@ -50,7 +50,8 @@ export default function EmprestimosPage() {
 
   async function fetchEmprestimos() {
     try {
-      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/emprestimos')
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/emprestimos`)
       const data = await res.json()
       setEmprestimos(data)
     } catch {
@@ -81,7 +82,8 @@ export default function EmprestimosPage() {
   const renovarEmprestimo = async (e: Emprestimo) => {
     try {
       const dataUTC = e.data_inicio.substring(0, 10)
-      const res = await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/emprestimos/${e.usuario_id}/${e.exemplar_codigo}/${dataUTC}/renovar`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/emprestimos/${e.usuario_id}/${e.exemplar_codigo}/${dataUTC}/renovar`, {
         method: 'PATCH'
       })
       if (!res.ok) throw new Error()
@@ -95,7 +97,8 @@ export default function EmprestimosPage() {
   const marcarComoDevolvido = async (e: Emprestimo) => {
     try {
       const dataUTC = e.data_inicio.substring(0, 10)
-      const res = await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/emprestimos/${e.usuario_id}/${e.exemplar_codigo}/${dataUTC}/devolver`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/emprestimos/${e.usuario_id}/${e.exemplar_codigo}/${dataUTC}/devolver`, {
         method: 'PATCH'
       })
       if (!res.ok) throw new Error()
@@ -111,7 +114,8 @@ export default function EmprestimosPage() {
     setLoadingConfirmacao(true)
     try {
       const dataUTC = emprestimoSelecionado.data_inicio.substring(0, 10)
-      const res = await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/emprestimos/${emprestimoSelecionado.usuario_id}/${emprestimoSelecionado.exemplar_codigo}/${dataUTC}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/emprestimos/${emprestimoSelecionado.usuario_id}/${emprestimoSelecionado.exemplar_codigo}/${dataUTC}`, {
         method: 'DELETE'
       })
       if (!res.ok) throw new Error()

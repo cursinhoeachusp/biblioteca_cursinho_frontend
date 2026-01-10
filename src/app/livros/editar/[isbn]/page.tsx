@@ -47,7 +47,8 @@ export default function EditarLivroPage() {
   })
 
   useEffect(() => {
-    fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/isbn/${isbn}`)
+    const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+    fetch(`${baseUrl}/livros/isbn/${isbn}`)
       .then(res => res.json())
       .then(livro => {
         setLivroId(livro.id)
@@ -64,7 +65,7 @@ export default function EditarLivroPage() {
       })
       .catch(() => toast.error("Erro ao carregar livro"))
 
-    fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/autores")
+    fetch(`${baseUrl}/autores`)
       .then(res => res.json())
       .then(setAutoresDisponiveis)
       .catch(console.error)
@@ -74,7 +75,8 @@ export default function EditarLivroPage() {
     if (!livroId) return
     try {
       setLoadingSubmit(true)
-      await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/livros/${livroId}`, {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${baseUrl}/livros/${livroId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
@@ -91,7 +93,8 @@ export default function EditarLivroPage() {
   async function removerExemplar(codigo: string) {
     try {
       setLoadingRemover(codigo)
-      await fetch(`https://biblioteca-cpe-1659a290eab7.herokuapp.com/exemplar/${codigo}`, { method: "DELETE" })
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      await fetch(`${baseUrl}/exemplar/${codigo}`, { method: "DELETE" })
       setExemplares(prev => prev.filter(e => e.codigo !== codigo))
       toast.success("Exemplar removido")
     } catch {
@@ -106,7 +109,8 @@ export default function EditarLivroPage() {
     if (!livroId) return
     try {
       setLoadingAdicionar(true)
-      const res = await fetch("https://biblioteca-cpe-1659a290eab7.herokuapp.com/exemplares/adicionar", {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/exemplares/adicionar`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ livro_id: livroId })

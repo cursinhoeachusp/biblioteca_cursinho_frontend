@@ -63,11 +63,12 @@ export default function UsuariosPage() {
   useEffect(() => {
     async function fetchUsuarios() {
       try {
-        const resTodos = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios')
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+        const resTodos = await fetch(`${baseUrl}/usuarios`)
         const dataTodos = await resTodos.json()
         setTodosUsuarios(dataTodos)
 
-        const resAtrasados = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/atrasados')
+        const resAtrasados = await fetch(`${baseUrl}/usuarios/atrasados`)
         const dataAtrasados = await resAtrasados.json()
         setUsuariosAtrasados(dataAtrasados)
       } catch (error) {
@@ -84,8 +85,9 @@ export default function UsuariosPage() {
       if (!selectedUserId) return
 
       // Use o backend local, não o Heroku
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(
-        `https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/${selectedUserId}`,
+        `${baseUrl}/usuarios/${selectedUserId}`,
         { method: 'DELETE' }
       )
 
@@ -117,8 +119,9 @@ export default function UsuariosPage() {
     try {
       if (!selectedUserId) return
 
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
       const response = await fetch(
-        `https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/${selectedUserId}`,
+        `${baseUrl}/usuarios/${selectedUserId}`,
         {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -156,7 +159,8 @@ export default function UsuariosPage() {
 
     setIsUploading(true);
     try {
-      const response = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/usuarios/batch', {
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const response = await fetch(`${baseUrl}/usuarios/batch`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ usuarios }), // Envia um objeto com a chave "usuarios"

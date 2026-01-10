@@ -52,7 +52,8 @@ export default function PenalidadesPage() {
 
   async function fetchPenalidades() {
     try {
-      const res = await fetch('https://biblioteca-cpe-1659a290eab7.herokuapp.com/penalidade')
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${baseUrl}/penalidade`)
       const data = await res.json()
       setPenalidades(data)
     } catch (error) {
@@ -189,9 +190,9 @@ export default function PenalidadesPage() {
               if (!penalidadeSelecionada) return
               setLoadingConfirmacao(true)
               try {
-                const baseUrl = `https://biblioteca-cpe-1659a290eab7.herokuapp.com/penalidade/${penalidadeSelecionada.usuarioId}/${penalidadeSelecionada.exemplarCodigo}/${penalidadeSelecionada.emprestimoDataInicio}/${penalidadeSelecionada.dataAplicacao}`
+                const baseUrl = process.env.NEXT_PUBLIC_API_URL;
                 const res = await fetch(
-                  modoConfirmacao === 'excluir' ? baseUrl : `${baseUrl}/cumprida`,
+                  modoConfirmacao === 'excluir' ? `${baseUrl}/penalidade/${penalidadeSelecionada.usuarioId}/${penalidadeSelecionada.exemplarCodigo}/${penalidadeSelecionada.emprestimoDataInicio}/${penalidadeSelecionada.dataAplicacao}` : `${baseUrl}/penalidade/${penalidadeSelecionada.usuarioId}/${penalidadeSelecionada.exemplarCodigo}/${penalidadeSelecionada.emprestimoDataInicio}/${penalidadeSelecionada.dataAplicacao}/cumprida`,
                   { method: modoConfirmacao === 'excluir' ? 'DELETE' : 'PATCH' }
                 )
                 if (!res.ok) throw new Error()
