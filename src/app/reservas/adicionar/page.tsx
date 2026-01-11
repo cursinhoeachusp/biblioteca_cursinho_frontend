@@ -289,7 +289,7 @@ function ReservaForm() {
                         Cancelar
                     </Button>
                     <Button type="submit" disabled={isLoading || !selectedUser || !exemplarCodigo}>
-                        {isLoading ? 'Salvando...' : 'Salvar Reserva'}
+                        {isLoading ? 'Salvando...' : 'Salvar reserva'}
                     </Button>
                 </div>
             </form>

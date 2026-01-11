@@ -135,7 +135,7 @@ export default function AdicionarPenalidadePage() {
 
   return (
     <main className="max-w-2xl mx-auto p-8 space-y-6">
-      <h1 className="text-3xl font-bold">Adicionar Penalidade</h1>
+      <h1 className="text-3xl font-bold">Adicionar penalidade</h1>
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input placeholder="ID do usuário" {...register('usuario_id')} />

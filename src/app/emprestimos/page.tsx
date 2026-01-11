@@ -232,7 +232,7 @@ export default function EmprestimosPage() {
           </SelectContent>
         </Select>
         <div className="w-full md:w-auto ml-auto">
-          <Botao texto="Adicionar Empréstimo" onClick={() => router.push('/emprestimos/adicionar')} />
+          <Botao texto="Adicionar empréstimo" onClick={() => router.push('/emprestimos/adicionar')} />
         </div>
       </div>
 

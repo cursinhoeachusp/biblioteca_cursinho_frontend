@@ -303,7 +303,7 @@ function AdicionarEmprestimoForm() {
         <div className="pt-4 flex justify-end gap-3">
           <Button type="button" variant="outline" onClick={() => router.back()}>Cancelar</Button>
           <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Salvando...' : 'Confirmar Empréstimo'}
+            {isLoading ? 'Salvando...' : 'Confirmar empréstimo'}
           </Button>
         </div>
 
