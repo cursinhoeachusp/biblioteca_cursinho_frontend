@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
-import Image from 'next/image' // Certifique-se de ter o logo
+import Image from 'next/image'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -49,9 +49,16 @@ export default function LoginPage() {
     <div className="flex h-screen w-full items-center justify-center bg-[#18407c]">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-lg">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
-            Biblioteca CPE
-          </h2>
+            <div className="mt-3 mb-3 px-4 flex justify-center md:justify-start">
+              <Image
+                src="/logo_login.png"
+                alt="Biblioteca Popular Logo"
+                width={350}
+                height={73}
+                priority
+                className="md:block"
+              />
+            </div>
           <p className="mt-2 text-sm text-gray-600">Coloque as suas credenciais. Se não tiver acesso, entre em contato com Inovatec.</p>
         </div>
 
