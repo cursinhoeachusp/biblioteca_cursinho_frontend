@@ -73,7 +73,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </header>
         )}
 
-        <main className="p-4 md:p-8 w-full max-w-full overflow-x-hidden">
+        <main className={`${isLoginPage ? 'p-0' : 'p-4 md:p-8'} w-full max-w-full overflow-x-hidden`}>
             {children}
         </main>
       </div>

@@ -46,13 +46,13 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen w-full items-center justify-center bg-slate-50">
+    <div className="flex h-screen w-full items-center justify-center bg-[#18407c]">
       <div className="w-full max-w-md space-y-8 rounded-lg bg-white p-10 shadow-lg">
         <div className="text-center">
           <h2 className="mt-6 text-3xl font-bold tracking-tight text-gray-900">
             Biblioteca CPE
           </h2>
-          <p className="mt-2 text-sm text-gray-600">Entre com suas credenciais</p>
+          <p className="mt-2 text-sm text-gray-600">Coloque as suas credenciais. Se não tiver acesso, entre em contato com Inovatec.</p>
         </div>
 
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
