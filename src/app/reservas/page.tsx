@@ -80,7 +80,7 @@ export default function ReservaPage() {
             <DropdownMenuContent>
               <DropdownMenuItem asChild>
                 <Link href={`/emprestimos/adicionar?usuario_id=${r.usuario_id}&exemplar_codigo=${r.exemplar_codigo}`}>
-                  Tornar Empréstimo
+                  Tornar empréstimo
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -102,7 +102,7 @@ export default function ReservaPage() {
           className="w-full placeholder:text-sm px-2 md:max-w-md border-gray-400"
         />
         <div className="w-full md:w-auto md:ml-auto">
-          <Botao texto="Adicionar Reserva" onClick={() => router.push('/reservas/adicionar')} />
+          <Botao texto="Adicionar reserva" onClick={() => router.push('/reservas/adicionar')} />
         </div>
       </div>
 

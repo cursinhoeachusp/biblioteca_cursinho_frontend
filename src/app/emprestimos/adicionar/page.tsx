@@ -150,7 +150,7 @@ function AdicionarEmprestimoForm() {
   return (
     <main className="max-w-3xl mx-auto p-8 md:p-16 space-y-8">
       <div>
-        <h1 className="text-3xl font-bold">Novo Empréstimo</h1>
+        <h1 className="text-3xl font-bold">Novo empréstimo</h1>
         <p className="text-muted-foreground mt-2">Registre a saída de um livro.</p>
       </div>
 
@@ -158,7 +158,7 @@ function AdicionarEmprestimoForm() {
         
         {/* SELEÇÃO DE USUÁRIO */}
         <div className="space-y-2">
-            <label className="font-semibold text-sm">Usuário (Aluno)</label>
+            <label className="font-semibold text-sm">Usuário (aluno)</label>
             <Popover open={isUserPopoverOpen} onOpenChange={setIsUserPopoverOpen}>
                 <PopoverTrigger asChild>
                     <Button
@@ -259,7 +259,7 @@ function AdicionarEmprestimoForm() {
 
         {/* SELEÇÃO DE EXEMPLAR (Só libera se tiver livro selecionado) */}
         <div className="space-y-2">
-            <label className="font-semibold text-sm">Exemplar Disponível</label>
+            <label className="font-semibold text-sm">Exemplar disponível</label>
             <Select 
                 onValueChange={setExemplarCodigo} 
                 value={exemplarCodigo} 
@@ -287,11 +287,11 @@ function AdicionarEmprestimoForm() {
         {/* DATAS */}
         <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-                <label className="font-semibold text-sm text-muted-foreground">Data Início</label>
+                <label className="font-semibold text-sm text-muted-foreground">Data de início</label>
                 <Input type="date" value={dataInicio} disabled className="bg-slate-50" />
             </div>
             <div className="space-y-2">
-                <label className="font-semibold text-sm">Previsão de Entrega</label>
+                <label className="font-semibold text-sm">Previsão de entrega</label>
                 <Input 
                     type="date" 
                     value={dataFimPrevisto} 

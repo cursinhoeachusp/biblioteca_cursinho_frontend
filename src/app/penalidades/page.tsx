@@ -77,18 +77,18 @@ export default function PenalidadesPage() {
 
   const columns: ColumnDef<Penalidade>[] = [
     { accessorKey: 'usuarioNome', header: 'Usuário' },
-    { accessorKey: 'tituloLivro', header: 'Título do Livro' },
+    { accessorKey: 'tituloLivro', header: 'Título do livro' },
     { accessorKey: 'exemplarCodigo', header: 'Exemplar' },
     { accessorKey: 'tipo', header: 'Tipo' },
     { accessorKey: 'causa', header: 'Causa' },
     {
       accessorKey: 'dataAplicacao',
-      header: 'Data Aplicação',
+      header: 'Data de aplicação',
       cell: ({ row }) => formatarData(row.original.dataAplicacao),
     },
     {
       accessorKey: 'dataSuspensao',
-      header: 'Data Suspensão',
+      header: 'Data de suspensão',
       cell: ({ row }) => formatarData(row.original.dataSuspensao),
     },
     {
@@ -152,10 +152,10 @@ export default function PenalidadesPage() {
         <div className=" mt-12">
           {search.trim() === '' ? (
             <>
-              <h2 className="text-2xl font-bold mb-4">Penalidades Pendentes</h2>
+              <h2 className="text-2xl font-bold mb-4">Penalidades pendentes</h2>
               <DataTable columns={columns} data={penalidadesPendentes} />
 
-              <h2 className="text-2xl font-bold mt-8 mb-4">Todas as Penalidades</h2>
+              <h2 className="text-2xl font-bold mt-8 mb-4">Todas as penalidades</h2>
               <DataTable columns={columns} data={todasPenalidades} />
             </>
           ) : (

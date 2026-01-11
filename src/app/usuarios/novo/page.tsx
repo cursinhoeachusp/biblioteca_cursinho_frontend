@@ -52,7 +52,7 @@ export default function NovoUsuarioPage() {
   return (
     <main className="p-16 flex justify-center">
       <div className="w-full max-w-3xl bg-white rounded-lg shadow-md p-10">
-        <h1 className="text-4xl font-bold mb-8 text-center">Novo Usuário</h1>
+        <h1 className="text-4xl font-bold mb-8 text-center">Novo usuário</h1>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Grid de campos principais */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -71,7 +71,7 @@ export default function NovoUsuarioPage() {
               {errors.cpf && <span className="text-red-600">{errors.cpf.message}</span>}
             </div>
             <div>
-              <label className="block font-medium">Gmail</label>
+              <label className="block font-medium">G-mail</label>
               <Input {...register('gmail')} placeholder="exemplo@gmail.com" />
               {errors.gmail && <span className="text-red-600">{errors.gmail.message}</span>}
             </div>
@@ -123,7 +123,7 @@ export default function NovoUsuarioPage() {
               className="bg-gray-300 text-gray-800 px-4 py-2 rounded"
               onClick={() => router.push('/usuarios')}
             >
-              Voltar para Usuários
+              Voltar para usuários
             </button>
             <button
               type="submit"

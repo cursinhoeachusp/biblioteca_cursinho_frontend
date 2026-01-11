@@ -161,7 +161,7 @@ export default function EmprestimosPage() {
     },
     {
       accessorKey: 'data_fim_previsto',
-      header: 'Fim Previsto',
+      header: 'Fim previsto',
       cell: ({ row }) => formatInTimeZone(parseISO(row.original.data_fim_previsto), 'UTC', 'dd/MM/yyyy')
     },
     {
@@ -201,7 +201,7 @@ export default function EmprestimosPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem disabled={e.renovado || devolvido} onClick={() => renovarEmprestimo(e)}>Renovar</DropdownMenuItem>
-              <DropdownMenuItem disabled={devolvido} onClick={() => marcarComoDevolvido(e)}>Marcar como Devolvido</DropdownMenuItem>
+              <DropdownMenuItem disabled={devolvido} onClick={() => marcarComoDevolvido(e)}>Marcar como devolvido</DropdownMenuItem>
               <DropdownMenuItem onClick={() => {
                 setEmprestimoSelecionado(e)
                 setConfirmandoExclusao(true)
@@ -227,8 +227,8 @@ export default function EmprestimosPage() {
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="inicio">Data de Início</SelectItem>
-            <SelectItem value="devolucao">Data de Devolução</SelectItem>
+            <SelectItem value="inicio">Data de início</SelectItem>
+            <SelectItem value="devolucao">Data de devolução</SelectItem>
           </SelectContent>
         </Select>
         <div className="w-full md:w-auto ml-auto">

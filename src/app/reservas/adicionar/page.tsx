@@ -144,7 +144,7 @@ function ReservaForm() {
 
     return (
         <main className="p-8 sm:p-16 max-w-4xl mx-auto">
-            <h1 className="text-4xl font-bold mb-2">Nova Reserva</h1>
+            <h1 className="text-4xl font-bold mb-2">Nova reserva</h1>
             <p className="text-muted-foreground mb-8">Preencha os dados para registrar a reserva.</p>
 
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -201,7 +201,7 @@ function ReservaForm() {
 
                 {/* 2. SELETOR DE EXEMPLAR (Agora reage ao livro selecionado acima) */}
                 <div className="space-y-2">
-                    <label htmlFor="exemplar" className="font-semibold">Exemplar Indisponível</label>
+                    <label htmlFor="exemplar" className="font-semibold">Exemplar indisponível</label>
                     <Select onValueChange={setExemplarCodigo} value={exemplarCodigo} disabled={!selectedLivroIsbn}>
                         <SelectTrigger id="exemplar">
                             <SelectValue placeholder={!selectedLivroIsbn ? "Selecione um livro primeiro" : "Selecione o código do exemplar"} />
@@ -275,7 +275,7 @@ function ReservaForm() {
 
                 {/* 4. DATA */}
                 <div className="space-y-2">
-                    <label htmlFor="data" className="font-semibold">Data de Efetuação</label>
+                    <label htmlFor="data" className="font-semibold">Data de efetuação</label>
                     <Input
                         id="data"
                         type="date"

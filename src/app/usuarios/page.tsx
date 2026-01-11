@@ -253,7 +253,7 @@ export default function UsuariosPage() {
               <h2 className="text-2xl font-bold mb-4">Usuários com empréstimos atrasados</h2>
               <DataTable columns={columns} data={usuariosAtrasados} />
 
-              <h2 className="text-2xl font-bold my-4">Todos os Usuários</h2>
+              <h2 className="text-2xl font-bold my-4">Todos os usuários</h2>
               <DataTable columns={columns} data={todosUsuarios} />
             </>
           ) : (
