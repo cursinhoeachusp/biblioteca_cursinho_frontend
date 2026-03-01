@@ -70,6 +70,10 @@ export default function ReservaPage() {
       header: '',
       cell: ({ row }) => {
         const r = row.original
+        // O código do exemplar geralmente é no formato "ISBN-NUMERO", ex: "9780131103627-1"
+        // Vamos extrair a primeira parte (o ISBN)
+        const isbnExtraido = r.exemplar_codigo.split('-')[0]
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -79,7 +83,8 @@ export default function ReservaPage() {
             </DropdownMenuTrigger>
             <DropdownMenuContent>
               <DropdownMenuItem asChild>
-                <Link href={`/emprestimos/adicionar?usuario_id=${r.usuario_id}&exemplar_codigo=${r.exemplar_codigo}`}>
+                {/* Agora passamos todas as informações na URL! */}
+                <Link href={`/emprestimos/adicionar?usuario_id=${r.usuario_id}&exemplar_codigo=${r.exemplar_codigo}&isbn=${isbnExtraido}&titulo=${encodeURIComponent(r.livro_titulo)}`}>
                   Tornar empréstimo
                 </Link>
               </DropdownMenuItem>

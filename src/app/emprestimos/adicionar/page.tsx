@@ -26,14 +26,16 @@ function AdicionarEmprestimoForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   
-  // Pega dados da URL (se veio pelo botão "Realizar Empréstimo" na lista)
+  // Pega todos os dados da URL
   const urlIsbn = searchParams.get('isbn')
   const urlTitulo = searchParams.get('titulo')
+  const urlUsuarioId = searchParams.get('usuario_id')
+  const urlExemplarCodigo = searchParams.get('exemplar_codigo')
 
-  // Estados do Formulário
+  // Estados do Formulário (Inicializa o exemplarCodigo com o da URL se existir)
   const [dataInicio] = useState(format(new Date(), 'yyyy-MM-dd'))
-  const [dataFimPrevisto, setDataFimPrevisto] = useState(format(addDays(new Date(), 10), 'yyyy-MM-dd')) // Padrão 10 dias
-  const [exemplarCodigo, setExemplarCodigo] = useState('')
+  const [dataFimPrevisto, setDataFimPrevisto] = useState(format(addDays(new Date(), 10), 'yyyy-MM-dd'))
+  const [exemplarCodigo, setExemplarCodigo] = useState(urlExemplarCodigo || '')
   const [isLoading, setIsLoading] = useState(false)
 
   // Estados de Busca (Livro)
@@ -110,6 +112,26 @@ function AdicionarEmprestimoForm() {
     }, 300)
     return () => clearTimeout(delayDebounceFn)
   }, [userSearchQuery])
+
+  useEffect(() => {
+    async function fetchUserFromUrl() {
+      if (!urlUsuarioId) return;
+
+      try {
+        const baseUrl = process.env.NEXT_PUBLIC_API_URL
+        // Precisamos desta rota para buscar 1 utilizador pelo ID
+        const res = await fetch(`${baseUrl}/usuarios/${urlUsuarioId}`)
+        if (!res.ok) throw new Error('Usuário não encontrado')
+        const data = await res.json()
+        
+        setSelectedUser(data)
+      } catch (error) {
+        console.error("Erro ao buscar usuário da URL:", error)
+      }
+    }
+
+    fetchUserFromUrl()
+  }, [urlUsuarioId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -257,7 +279,7 @@ function AdicionarEmprestimoForm() {
             </Popover>
         </div>
 
-        {/* SELEÇÃO DE EXEMPLAR (Só libera se tiver livro selecionado) */}
+        {/* SELEÇÃO DE EXEMPLAR */}
         <div className="space-y-2">
             <label className="font-semibold text-sm">Exemplar disponível</label>
             <Select 
@@ -269,6 +291,13 @@ function AdicionarEmprestimoForm() {
                     <SelectValue placeholder={!selectedLivroIsbn ? "Escolha um livro primeiro" : "Selecione a etiqueta/código"} />
                 </SelectTrigger>
                 <SelectContent>
+                    {/* Força o exemplar da URL a aparecer na lista como opção selecionável */}
+                    {urlExemplarCodigo && !exemplaresDoLivro.includes(urlExemplarCodigo) && (
+                        <SelectItem value={urlExemplarCodigo}>
+                            {urlExemplarCodigo} (Reservado)
+                        </SelectItem>
+                    )}
+                    
                     {exemplaresDoLivro.length > 0 ? (
                         exemplaresDoLivro.map((cod) => (
                             <SelectItem key={cod} value={cod}>
@@ -276,9 +305,11 @@ function AdicionarEmprestimoForm() {
                             </SelectItem>
                         ))
                     ) : (
-                        <SelectItem value="-" disabled>
-                           {selectedLivroIsbn ? "Sem exemplares disponíveis" : "..."}
-                        </SelectItem>
+                        !urlExemplarCodigo && (
+                          <SelectItem value="-" disabled>
+                             {selectedLivroIsbn ? "Sem exemplares disponíveis" : "..."}
+                          </SelectItem>
+                        )
                     )}
                 </SelectContent>
             </Select>
