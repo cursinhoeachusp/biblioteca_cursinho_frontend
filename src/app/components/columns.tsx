@@ -38,7 +38,7 @@ export const columns: ColumnDef<Usuario>[] = [
   },
   {
     accessorKey: 'cpf',
-    header: 'CPF',
+    header: 'RG/CPF',
   },
   {
     accessorKey: 'status',

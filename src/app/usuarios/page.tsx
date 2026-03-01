@@ -233,7 +233,7 @@ export default function UsuariosPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="id">ID</SelectItem>
-              <SelectItem value="cpf">CPF</SelectItem>
+              <SelectItem value="cpf">RG/CPF</SelectItem>
               <SelectItem value="nome">Nome</SelectItem>
             </SelectContent>
           </Select>

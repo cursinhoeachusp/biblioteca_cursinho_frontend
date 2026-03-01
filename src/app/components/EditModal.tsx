@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 
 const usuarioSchema = z.object({
     nome: z.string().min(2, 'Nome obrigatório'),
-    cpf: z.string().min(11, 'CPF inválido'),
+    cpf: z.string().min(7, 'Documento inválido, insira pelo menos 7 caracteres'),
     gmail: z.string().email('Email inválido'),
     telefone: z.string().min(8, 'Telefone obrigatório'),
     status: z.enum(['Regular', 'Bloqueado'], {
@@ -145,7 +145,7 @@ export function EditModal({
                                         {errors.nome && <span className="text-red-600 text-xs">{errors.nome.message}</span>}
                                     </div>
                                     <div>
-                                        <label className="block font-medium text-sm text-gray-700 mb-1">CPF</label>
+                                        <label className="block font-medium text-sm text-gray-700 mb-1">RG/CPF</label>
                                         <Input {...register('cpf')} />
                                         {errors.cpf && <span className="text-red-600 text-xs">{errors.cpf.message}</span>}
                                     </div>

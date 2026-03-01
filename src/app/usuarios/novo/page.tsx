@@ -17,7 +17,7 @@ const cepRegex = /^\d{8}$/
 
 const usuarioSchema = z.object({
   nome: z.string().min(2, 'Nome obrigatório'),
-  cpf: z.string().regex(cpfRegex, 'CPF deve ter 11 números, apenas dígitos'),
+  cpf: z.string().min(7, 'O documento deve ter no mínimo 7 caracteres'),
   gmail: z.string().email('Email inválido'),
   telefone: z.string().regex(telefoneRegex, 'Telefone deve ter 11 números, apenas dígitos'),
   cep: z.string().regex(cepRegex, 'CEP deve ter 8 números, apenas dígitos'),
@@ -88,11 +88,11 @@ export default function NovoUsuarioPage() {
               {errors.nome && <span className="text-red-600">{errors.nome.message}</span>}
             </div>
             <div>
-              <label className="block font-medium">CPF</label>
+              <label className="block font-medium">RG/CPF</label>
               <Input
                 {...register('cpf')}
-                placeholder="Somente números, ex: 12345678901"
-                maxLength={11}
+                placeholder="Apenas números, ex: 123456789"
+                maxLength={14}
               />
               {errors.cpf && <span className="text-red-600">{errors.cpf.message}</span>}
             </div>
