@@ -30,7 +30,8 @@ type UsuarioForm = z.infer<typeof usuarioSchema>
 
 export default function NovoUsuarioPage() {
   const router = useRouter()
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<UsuarioForm>({
+  // Adicionado o setValue aqui
+  const { register, handleSubmit, setValue, formState: { errors, isSubmitting } } = useForm<UsuarioForm>({
     resolver: zodResolver(usuarioSchema)
   })
 
@@ -48,6 +49,31 @@ export default function NovoUsuarioPage() {
       alert('Erro ao cadastrar usuário')
     }
   }
+
+  // --- NOVA FUNÇÃO: Integração com ViaCEP ---
+  const handleCepBlur = async (e: React.FocusEvent<HTMLInputElement>) => {
+    const cepLimpo = e.target.value.replace(/\D/g, '');
+    
+    if (cepLimpo.length === 8) {
+      try {
+        const res = await fetch(`https://viacep.com.br/ws/${cepLimpo}/json/`);
+        const data = await res.json();
+        
+        if (!data.erro) {
+          // Preenche o logradouro automaticamente e remove os erros desse campo, se houver
+          setValue('logradouro', data.logradouro, { shouldValidate: true });
+          
+          // Opcional: foca no campo número automaticamente para agilizar a digitação
+          document.getElementById('numero-input')?.focus();
+        }
+      } catch (error) {
+        console.error("Erro ao consultar o ViaCEP:", error);
+      }
+    }
+  };
+
+  // Prepara o registro do CEP para podermos mesclar o onBlur nativo com o nosso
+  const cepRegister = register('cep');
 
   return (
     <main className="p-16 flex justify-center">
@@ -71,7 +97,7 @@ export default function NovoUsuarioPage() {
               {errors.cpf && <span className="text-red-600">{errors.cpf.message}</span>}
             </div>
             <div>
-              <label className="block font-medium">G-mail</label>
+              <label className="block font-medium">E-mail</label>
               <Input {...register('gmail')} placeholder="exemplo@gmail.com" />
               {errors.gmail && <span className="text-red-600">{errors.gmail.message}</span>}
             </div>
@@ -94,7 +120,11 @@ export default function NovoUsuarioPage() {
             <div>
               <label className="block font-medium">CEP</label>
               <Input
-                {...register('cep')}
+                {...cepRegister}
+                onBlur={(e) => {
+                  cepRegister.onBlur(e); // Mantém a validação do zod/react-hook-form
+                  handleCepBlur(e);      // Dispara a nossa busca do ViaCEP
+                }}
                 placeholder="Somente números, ex: 12345678"
                 maxLength={8}
               />
@@ -107,7 +137,8 @@ export default function NovoUsuarioPage() {
             </div>
             <div>
               <label className="block font-medium">Número</label>
-              <Input {...register('numero')} />
+              {/* Adicionado o id para o foco automático funcionar */}
+              <Input id="numero-input" {...register('numero')} />
               {errors.numero && <span className="text-red-600">{errors.numero.message}</span>}
             </div>
             <div>
