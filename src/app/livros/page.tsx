@@ -12,7 +12,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
-import { MoreHorizontal } from 'lucide-react'
+// Adicionei o Loader2 aqui na importação
+import { MoreHorizontal, Loader2 } from 'lucide-react' 
 import {
   Dialog,
   DialogContent,
@@ -55,15 +56,21 @@ export default function LivrosPage() {
   const [importing, setImporting] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
+  // Estado para controlar a tela de carregamento inicial
+  const [isLoading, setIsLoading] = useState(true)
+
   useEffect(() => {
     async function fetchLivros() {
       try {
+        setIsLoading(true)
         const baseUrl = process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(`${baseUrl}/livros`)
         const data = await res.json()
         setLivros(data)
       } catch (error) {
         console.error('Erro ao buscar livros:', error)
+      } finally {
+        setIsLoading(false)
       }
     }
 
@@ -260,8 +267,17 @@ export default function LivrosPage() {
         </div>
       </div>
 
-      <DataTable columns={columns} data={livrosFiltrados} />
-      
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-24 animate-in fade-in duration-500">
+          <Loader2 className="w-16 h-16 text-[#ef7b16] animate-spin mb-6" />
+          <p className="text-xl font-bold text-[#18407c]">A despertar a base de dados...</p>
+          <p className="text-sm text-gray-500 mt-2 text-center max-w-md">
+            A primeira conexão do dia pode demorar cerca de 50 segundos para carregar enquanto o servidor acorda. Por favor, aguarde um momento! ☕
+          </p>
+        </div>
+      ) : (
+        <DataTable columns={columns} data={livrosFiltrados} />
+      )}
 
       <Dialog open={!!isbnParaExcluir} onOpenChange={() => setIsbnParaExcluir(null)}>
         <DialogContent>
