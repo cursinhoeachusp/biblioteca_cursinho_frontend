@@ -43,7 +43,14 @@ export default function EditarLivroPage() {
     formState: { errors }
   } = useForm<LivroForm>({
     resolver: zodResolver(schema),
-    defaultValues: { autores: [] }
+    defaultValues: {
+      isbn: "",
+      titulo: "",
+      editora: "",
+      edicao: 1,
+      categoria: "",
+      autores: []
+    } // Declarar todos os campos aqui é fundamental
   })
 
   useEffect(() => {
@@ -52,16 +59,17 @@ export default function EditarLivroPage() {
       .then(res => res.json())
       .then(livro => {
         setLivroId(livro.id)
-        setExemplares(livro.exemplares)
-        reset({
-  isbn: livro.isbn,
-  titulo: livro.titulo,
-  editora: livro.editora,
-  edicao: livro.edicao,
-  categoria: livro.categoria,
-  autores: livro.autores
-})
+        setExemplares(livro.exemplares || []) // Previne erros no render (map)
 
+        // Agora o reset vai repovoar a tela perfeitamente e respeitar o Zod
+        reset({
+          isbn: livro.isbn || "",
+          titulo: livro.titulo || "",
+          editora: livro.editora || "",
+          edicao: Number(livro.edicao) || 1, // Garante que seja um número válido
+          categoria: livro.categoria || "",
+          autores: livro.autores || []
+        })
       })
       .catch(() => toast.error("Erro ao carregar livro"))
 
@@ -131,7 +139,7 @@ export default function EditarLivroPage() {
       <h1 className="text-3xl font-bold">Editar Livro</h1>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
         <Input placeholder="ISBN" {...register("isbn")} disabled />
-        
+
         <Input placeholder="Título" {...register("titulo")} />
         {errors.titulo && <p className="text-sm text-red-500">{errors.titulo.message}</p>}
 
