@@ -102,7 +102,7 @@ export default function EditarLivroPage() {
     try {
       setLoadingRemover(codigo)
       const baseUrl = process.env.NEXT_PUBLIC_API_URL;
-      await fetch(`${baseUrl}/exemplar/${codigo}`, { method: "DELETE" })
+      await fetch(`${baseUrl}/exemplares/${codigo}`, { method: "DELETE" })
       setExemplares(prev => prev.filter(e => e.codigo !== codigo))
       toast.success("Exemplar removido")
     } catch {
